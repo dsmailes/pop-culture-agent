@@ -53,8 +53,9 @@ instructions:
 Refer to [Pop Culture Agent](../pop-culture-agent/AGENTS.md) for agent progress-update style.
 ```
 
-The installer is idempotent: rerunning it refreshes the bundled files without
-duplicating bridge lines.
+The installer is idempotent and non-destructive: rerunning it creates any
+missing bundled files and bridge lines, but preserves existing files and does
+not duplicate bridge lines.
 
 The installer refuses to run from the Pop Culture Agent source repo by default,
 so testing the installer here does not create local bridge files by accident.
@@ -136,7 +137,7 @@ task running.
 
 Edit `pop-culture-agent/quotes.json` to add or remove quotes. Edit
 `pop-culture-agent/AGENTS.snippet.md` to change frequency, formatting, tone
-modes, or selection rules.
+modes, or selection rules. The installer preserves these files when rerun.
 
 You can also ask your coding agent to expand the bank naturally:
 

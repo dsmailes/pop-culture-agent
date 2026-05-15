@@ -25,10 +25,24 @@ assert_line_count() {
   [ "$actual" = "$expected" ] || fail "$file contains '$line' $actual times, expected $expected"
 }
 
+assert_file_contains_text() {
+  file=$1
+  text=$2
+
+  [ -f "$file" ] || fail "missing file: $file"
+  grep -Fq "$text" "$file" || fail "$file does not contain expected text: $text"
+}
+
 tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test.XXXXXX")
 trap 'rm -rf "$tmpdir"' EXIT
 
 cd "$tmpdir"
+mkdir -p pop-culture-agent .github
+printf '%s\n' "# Existing agents" "Keep this project rule." > AGENTS.md
+printf '%s\n' "# Existing installed agent" "Keep this local mode." > pop-culture-agent/AGENTS.md
+printf '%s\n' '{"custom":true}' > pop-culture-agent/quotes.json
+printf '%s\n' "# Existing Copilot instructions" > .github/copilot-instructions.md
+
 POP_CULTURE_AGENT_RAW_URL="file://$repo_root" sh "$repo_root/install.sh" >/dev/null
 POP_CULTURE_AGENT_RAW_URL="file://$repo_root" sh "$repo_root/install.sh" >/dev/null
 
@@ -42,7 +56,10 @@ assert_line_count CLAUDE.md "@./pop-culture-agent/AGENTS.md" 1
 assert_line_count GEMINI.md "@./pop-culture-agent/AGENTS.md" 1
 assert_line_count .github/copilot-instructions.md "Refer to [Pop Culture Agent](../pop-culture-agent/AGENTS.md) for agent progress-update style." 1
 
-assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/config.strict.md"
+assert_file_contains_text AGENTS.md "Keep this project rule."
+assert_file_contains_text .github/copilot-instructions.md "# Existing Copilot instructions"
+assert_file_contains_text pop-culture-agent/AGENTS.md "Keep this local mode."
+assert_file_contains_text pop-culture-agent/quotes.json '"custom":true'
 
 tmpdir_open=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-open.XXXXXX")
 tmpdir_improvise=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-improvise.XXXXXX")

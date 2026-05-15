@@ -36,8 +36,9 @@ For `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`, the bridge line is:
 @./pop-culture-agent/AGENTS.md
 ```
 
-Keep your existing repo instructions in place. The snippet is additive and the
-installer will not duplicate existing bridge lines.
+Keep your existing repo instructions in place. The snippet is additive: the
+installer creates missing files, preserves existing files, and will not
+duplicate existing bridge lines.
 
 ## Install-Time Choice
 
@@ -93,7 +94,7 @@ then delete the `pop-culture-agent` directory.
 
 If the quotes feel too frequent, edit `AGENTS.snippet.md` and change the
 frequency guidance from `3-5 agent updates` to a larger interval such as
-`5-8 agent updates`.
+`5-8 agent updates`. The installer preserves this file when rerun.
 
 ## Quote Bank
 

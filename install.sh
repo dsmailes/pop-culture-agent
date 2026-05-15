@@ -108,16 +108,32 @@ fi
 
 mkdir -p "$INSTALL_DIR"
 
-fetch "$REPO_RAW_URL/pop-culture-agent/AGENTS.snippet.md" "$INSTALL_DIR/AGENTS.snippet.md"
-fetch "$REPO_RAW_URL/pop-culture-agent/quotes.json" "$INSTALL_DIR/quotes.json"
-fetch "$REPO_RAW_URL/pop-culture-agent/config.strict.md" "$INSTALL_DIR/config.strict.md"
-fetch "$REPO_RAW_URL/pop-culture-agent/config.open.md" "$INSTALL_DIR/config.open.md"
+install_file_once() {
+  src=$1
+  dest=$2
 
-{
-  echo "@./${INSTALL_DIR}/AGENTS.snippet.md"
-  echo "@./${INSTALL_DIR}/quotes.json"
-  echo "@./${INSTALL_DIR}/config.${MODE}.md"
-} > "$INSTALL_DIR/AGENTS.md"
+  if [ -e "$dest" ]; then
+    echo "Pop Culture Agent: preserving existing $dest." >&2
+    return
+  fi
+
+  fetch "$src" "$dest"
+}
+
+install_file_once "$REPO_RAW_URL/pop-culture-agent/AGENTS.snippet.md" "$INSTALL_DIR/AGENTS.snippet.md"
+install_file_once "$REPO_RAW_URL/pop-culture-agent/quotes.json" "$INSTALL_DIR/quotes.json"
+install_file_once "$REPO_RAW_URL/pop-culture-agent/config.strict.md" "$INSTALL_DIR/config.strict.md"
+install_file_once "$REPO_RAW_URL/pop-culture-agent/config.open.md" "$INSTALL_DIR/config.open.md"
+
+if [ -e "$INSTALL_DIR/AGENTS.md" ]; then
+  echo "Pop Culture Agent: preserving existing $INSTALL_DIR/AGENTS.md." >&2
+else
+  {
+    echo "@./${INSTALL_DIR}/AGENTS.snippet.md"
+    echo "@./${INSTALL_DIR}/quotes.json"
+    echo "@./${INSTALL_DIR}/config.${MODE}.md"
+  } > "$INSTALL_DIR/AGENTS.md"
+fi
 
 has_target() {
   case ",$TARGETS," in
