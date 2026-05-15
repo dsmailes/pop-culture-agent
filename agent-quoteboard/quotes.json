@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "quotes": [
+    {
+      "id": "pieces_falling_place",
+      "quote": "The pieces are all falling into place.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["discovery"],
+      "tones": ["default", "noir"],
+      "intensity": 0.3,
+      "rarity": 0.3
+    },
+    {
+      "id": "truth_out_there",
+      "quote": "The truth is out there.",
+      "source": "The X-Files",
+      "source_type": "tv",
+      "states": ["discovery", "hidden_complexity"],
+      "tones": ["default", "noir"],
+      "intensity": 0.4,
+      "rarity": 0.4
+    },
+    {
+      "id": "follow_white_rabbit",
+      "quote": "Follow the white rabbit.",
+      "source": "The Matrix",
+      "source_type": "movie",
+      "states": ["discovery"],
+      "tones": ["cyberpunk", "default"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    },
+    {
+      "id": "call_inside_house",
+      "quote": "The call is coming from inside the house.",
+      "source": "When a Stranger Calls",
+      "source_type": "movie",
+      "states": ["root_cause_found"],
+      "tones": ["default", "survival_horror", "noir"],
+      "intensity": 0.6,
+      "rarity": 0.3
+    },
+    {
+      "id": "elementary",
+      "quote": "Elementary.",
+      "source": "Sherlock Holmes",
+      "source_type": "literature",
+      "states": ["root_cause_found", "discovery"],
+      "tones": ["noir", "default"],
+      "intensity": 0.2,
+      "rarity": 0.4
+    },
+    {
+      "id": "bug_reveals_itself",
+      "quote": "There you are.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["root_cause_found"],
+      "tones": ["exhausted_senior_engineer", "default"],
+      "intensity": 0.2,
+      "rarity": 0.2
+    },
+    {
+      "id": "bigger_boat",
+      "quote": "We're gonna need a bigger boat.",
+      "source": "Jaws",
+      "source_type": "movie",
+      "states": ["hidden_complexity"],
+      "tones": ["default", "survival_horror"],
+      "intensity": 0.7,
+      "rarity": 0.2
+    },
+    {
+      "id": "rabbit_hole_deepens",
+      "quote": "The rabbit hole goes deeper.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["hidden_complexity"],
+      "tones": ["default", "cyberpunk", "noir"],
+      "intensity": 0.5,
+      "rarity": 0.4
+    },
+    {
+      "id": "boss_second_phase",
+      "quote": "Second phase unlocked.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["hidden_complexity"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.5,
+      "rarity": 0.5
+    },
+    {
+      "id": "what_sorcery",
+      "quote": "What kind of sorcery is this?",
+      "source": "meme",
+      "source_type": "meme",
+      "states": ["confusion"],
+      "tones": ["default"],
+      "intensity": 0.5,
+      "rarity": 0.4
+    },
+    {
+      "id": "glitch_matrix",
+      "quote": "A glitch in the Matrix.",
+      "source": "The Matrix",
+      "source_type": "movie",
+      "states": ["confusion"],
+      "tones": ["cyberpunk", "default"],
+      "intensity": 0.5,
+      "rarity": 0.3
+    },
+    {
+      "id": "does_not_compute",
+      "quote": "Does not compute.",
+      "source": "Lost in Space",
+      "source_type": "tv",
+      "states": ["confusion"],
+      "tones": ["default", "cyberpunk"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "still_suffering",
+      "quote": "Why are we still here? Just to suffer?",
+      "source": "Metal Gear Solid V",
+      "source_type": "game",
+      "states": ["repeated_failure"],
+      "tones": ["default", "exhausted_senior_engineer"],
+      "intensity": 0.8,
+      "rarity": 0.3
+    },
+    {
+      "id": "continue_screen",
+      "quote": "Continue?",
+      "source": "arcade games",
+      "source_type": "game",
+      "states": ["repeated_failure"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    },
+    {
+      "id": "same_error_again",
+      "quote": "Ah shit, here we go again.",
+      "source": "Grand Theft Auto: San Andreas",
+      "source_type": "game",
+      "states": ["repeated_failure", "repeated_file_revisit"],
+      "tones": ["default", "exhausted_senior_engineer"],
+      "intensity": 0.7,
+      "rarity": 0.4
+    },
+    {
+      "id": "no_turning_back",
+      "quote": "No turning back now.",
+      "source": "common phrase",
+      "source_type": "common",
+      "states": ["risky_action"],
+      "tones": ["default", "survival_horror"],
+      "intensity": 0.5,
+      "rarity": 0.3
+    },
+    {
+      "id": "crossing_streams",
+      "quote": "Crossing the streams.",
+      "source": "Ghostbusters",
+      "source_type": "movie",
+      "states": ["risky_action"],
+      "tones": ["default"],
+      "intensity": 0.6,
+      "rarity": 0.5
+    },
+    {
+      "id": "hold_onto_butts",
+      "quote": "Hold onto your butts.",
+      "source": "Jurassic Park",
+      "source_type": "movie",
+      "states": ["risky_action"],
+      "tones": ["default"],
+      "intensity": 0.6,
+      "rarity": 0.4
+    },
+    {
+      "id": "mission_accomplished",
+      "quote": "Mission accomplished.",
+      "source": "common phrase",
+      "source_type": "common",
+      "states": ["completion", "build_test_success"],
+      "tones": ["default", "retro_game"],
+      "intensity": 0.3,
+      "rarity": 0.2
+    },
+    {
+      "id": "gg",
+      "quote": "GG.",
+      "source": "gaming",
+      "source_type": "game",
+      "states": ["completion", "build_test_success"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.2,
+      "rarity": 0.5
+    },
+    {
+      "id": "another_case_closed",
+      "quote": "Another case closed.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["completion"],
+      "tones": ["noir", "default"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "green_across_board",
+      "quote": "Green across the board.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["build_test_success"],
+      "tones": ["default", "cyberpunk"],
+      "intensity": 0.3,
+      "rarity": 0.3
+    },
+    {
+      "id": "flawless_victory",
+      "quote": "Flawless victory.",
+      "source": "Mortal Kombat",
+      "source_type": "game",
+      "states": ["build_test_success"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.5,
+      "rarity": 0.5
+    },
+    {
+      "id": "test_failure_boss_music",
+      "quote": "Boss music starts.",
+      "source": "meme",
+      "source_type": "meme",
+      "states": ["build_test_failure"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.6,
+      "rarity": 0.5
+    },
+    {
+      "id": "red_alert",
+      "quote": "Red alert.",
+      "source": "Star Trek",
+      "source_type": "tv",
+      "states": ["build_test_failure", "catastrophic_realization"],
+      "tones": ["default", "survival_horror"],
+      "intensity": 0.6,
+      "rarity": 0.4
+    },
+    {
+      "id": "this_is_fine",
+      "quote": "This is fine.",
+      "source": "meme",
+      "source_type": "meme",
+      "states": ["catastrophic_realization", "repeated_failure"],
+      "tones": ["default", "exhausted_senior_engineer"],
+      "intensity": 0.7,
+      "rarity": 0.4
+    },
+    {
+      "id": "ominous_save_room",
+      "quote": "The save room music stopped.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["catastrophic_realization"],
+      "tones": ["survival_horror"],
+      "intensity": 0.8,
+      "rarity": 0.6
+    },
+    {
+      "id": "back_to_this_file",
+      "quote": "Back to the scene of the crime.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_file_revisit"],
+      "tones": ["noir", "default"],
+      "intensity": 0.4,
+      "rarity": 0.4
+    },
+    {
+      "id": "same_room_new_monster",
+      "quote": "Same room, new problem.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_file_revisit", "hidden_complexity"],
+      "tones": ["survival_horror", "exhausted_senior_engineer"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    }
+  ]
+}
