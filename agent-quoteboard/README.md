@@ -9,26 +9,27 @@ repetition.
 
 ## Install In A Repo With AGENTS.md
 
-Copy the `agent-quoteboard` directory into your repository, then add these
-lines to your existing root `AGENTS.md`:
+Run this from the target repo:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
+```
+
+The installer copies the `agent-quoteboard` directory into your repository, then
+adds one line to your existing root `AGENTS.md`:
 
 ```md
-@./agent-quoteboard/AGENTS.snippet.md
-@./agent-quoteboard/quotes.json
-@./agent-quoteboard/config.strict.md
+@./agent-quoteboard/AGENTS.md
 ```
 
 Keep your existing repo instructions in place. The snippet is additive.
 
 ## Install In A Repo Without AGENTS.md
 
-Copy the `agent-quoteboard` directory into your repository, then create a root
-`AGENTS.md` containing:
+Run the same installer. It creates a root `AGENTS.md` containing:
 
 ```md
-@./agent-quoteboard/AGENTS.snippet.md
-@./agent-quoteboard/quotes.json
-@./agent-quoteboard/config.strict.md
+@./agent-quoteboard/AGENTS.md
 ```
 
 ## Install-Time Choice
@@ -50,9 +51,15 @@ the behavior predictable.
 Open mode prefers `quotes.json`, but lets the agent improvise a short,
 contextually appropriate line when the bank has no fresh fit.
 
+Install open mode with:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=open sh
+```
+
 ## Uninstall
 
-Remove the include lines from `AGENTS.md`, then delete the `agent-quoteboard`
+Remove the include line from `AGENTS.md`, then delete the `agent-quoteboard`
 directory.
 
 ## Tune

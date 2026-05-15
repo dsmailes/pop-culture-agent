@@ -14,21 +14,28 @@ It is intentionally small:
 
 ## Install
 
-Copy the `agent-quoteboard` directory into your repository.
+Run this from the root of the repo where you want Agent Quoteboard installed:
 
-If your repo already has an `AGENTS.md`, add:
-
-```md
-@./agent-quoteboard/AGENTS.snippet.md
-@./agent-quoteboard/quotes.json
-@./agent-quoteboard/config.strict.md
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
-If your repo does not have an `AGENTS.md`, create one with those same lines.
+The installer downloads `agent-quoteboard/` and adds one include line to the
+target repo's `AGENTS.md`:
+
+```md
+@./agent-quoteboard/AGENTS.md
+```
 
 ## Choose A Mode
 
-Use exactly one config file:
+Strict mode is the default. To install open mode:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=open sh
+```
+
+Under the hood, use exactly one config file:
 
 ```md
 @./agent-quoteboard/config.strict.md
@@ -61,5 +68,5 @@ modes, or selection rules.
 
 ## Uninstall
 
-Remove the Agent Quoteboard include lines from `AGENTS.md`, then delete the
+Remove the Agent Quoteboard include line from `AGENTS.md`, then delete the
 `agent-quoteboard` directory.
