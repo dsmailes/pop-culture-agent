@@ -3,10 +3,86 @@ set -eu
 
 REPO_RAW_URL="${AGENT_QUOTEBOARD_RAW_URL:-https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main}"
 INSTALL_DIR="${AGENT_QUOTEBOARD_DIR:-agent-quoteboard}"
-REQUESTED_MODE="${AGENT_QUOTEBOARD_MODE:-strict}"
-TARGETS="${AGENT_QUOTEBOARD_TARGETS:-agents,claude,gemini,copilot}"
 INCLUDE_LINE="@./${INSTALL_DIR}/AGENTS.md"
 COPILOT_LINE="Refer to [Agent Quoteboard](../${INSTALL_DIR}/AGENTS.md) for agent progress-update style."
+
+if [ -z "${AGENT_QUOTEBOARD_ALLOW_SELF_INSTALL:-}" ] &&
+  [ -f install.sh ] &&
+  [ -f agent-quoteboard/AGENTS.snippet.md ] &&
+  [ -f agent-quoteboard/quotes.json ] &&
+  [ -f agent-quoteboard/config.strict.md ] &&
+  [ -f agent-quoteboard/config.open.md ]; then
+  echo "Agent Quoteboard: this looks like the Pop Culture Agent source repo." >&2
+  echo "Run the installer from the target repo, or set AGENT_QUOTEBOARD_ALLOW_SELF_INSTALL=1 to override." >&2
+  exit 1
+fi
+
+can_prompt() {
+  [ -z "${AGENT_QUOTEBOARD_NONINTERACTIVE:-}" ] && [ -r /dev/tty ] && [ -w /dev/tty ]
+}
+
+prompt_mode() {
+  if [ "${AGENT_QUOTEBOARD_MODE+x}" = x ]; then
+    printf '%s\n' "$AGENT_QUOTEBOARD_MODE"
+    return
+  fi
+
+  if can_prompt; then
+    {
+      printf '\n'
+      printf 'Pop Culture Agent mode:\n'
+      printf '  1) Strict - use only the quote bank (default)\n'
+      printf '  2) Improvise - allow short fallback lines\n'
+      printf 'Choose mode [1]: '
+    } > /dev/tty
+    IFS= read -r answer < /dev/tty || answer=
+
+    case "$answer" in
+      2|i|I|improvise|Improvise) printf '%s\n' "improvise" ;;
+      *) printf '%s\n' "strict" ;;
+    esac
+  else
+    echo "Agent Quoteboard: no interactive terminal detected; using strict mode." >&2
+    printf '%s\n' "strict"
+  fi
+}
+
+prompt_targets() {
+  if [ "${AGENT_QUOTEBOARD_TARGETS+x}" = x ]; then
+    printf '%s\n' "$AGENT_QUOTEBOARD_TARGETS"
+    return
+  fi
+
+  if can_prompt; then
+    {
+      printf '\n'
+      printf 'Agent bridge files:\n'
+      printf '  1) All: AGENTS.md, CLAUDE.md, GEMINI.md, Copilot (default)\n'
+      printf '  2) AGENTS.md only\n'
+      printf '  3) AGENTS.md + CLAUDE.md\n'
+      printf '  4) Custom comma list (agents,claude,gemini,copilot)\n'
+      printf 'Choose targets [1]: '
+    } > /dev/tty
+    IFS= read -r answer < /dev/tty || answer=
+
+    case "$answer" in
+      2) printf '%s\n' "agents" ;;
+      3) printf '%s\n' "agents,claude" ;;
+      4)
+        printf 'Custom targets: ' > /dev/tty
+        IFS= read -r custom_targets < /dev/tty || custom_targets=
+        printf '%s\n' "${custom_targets:-agents,claude,gemini,copilot}"
+        ;;
+      *) printf '%s\n' "agents,claude,gemini,copilot" ;;
+    esac
+  else
+    echo "Agent Quoteboard: no interactive terminal detected; using all bridge targets." >&2
+    printf '%s\n' "agents,claude,gemini,copilot"
+  fi
+}
+
+REQUESTED_MODE=$(prompt_mode)
+TARGETS=$(prompt_targets)
 
 case "$REQUESTED_MODE" in
   strict) MODE=strict ;;

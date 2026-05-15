@@ -21,6 +21,17 @@ Run this from the root of the repo where you want Pop Culture Agent installed:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
+When run in a terminal, the installer asks you to choose:
+
+- strict or improvise mode
+- which agent bridge files to create
+
+Press Enter for the recommended defaults: strict mode and all supported bridge
+files.
+
+If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
+`.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
+
 The installer downloads `agent-quoteboard/`, writes the selected quote config,
 and adds small bridge instructions for common coding agents:
 
@@ -45,12 +56,15 @@ Refer to [Agent Quoteboard](../agent-quoteboard/AGENTS.md) for agent progress-up
 The installer is idempotent: rerunning it refreshes the bundled files without
 duplicating bridge lines.
 
+The installer refuses to run from the Pop Culture Agent source repo by default,
+so testing the installer here does not create local bridge files by accident.
+
 ## Choose A Mode
 
 Strict mode is the default. It uses only `quotes.json` and skips quotes when no
 bank quote fits.
 
-To let the agent improvise at install time, install with:
+To skip the prompt and install improvise mode directly, run:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=improvise sh
@@ -97,10 +111,16 @@ with:
 ## Choose Agent Targets
 
 By default, the installer targets `agents,claude,gemini,copilot`. To install
-only specific bridge files, set `AGENT_QUOTEBOARD_TARGETS`:
+only specific bridge files without prompting, set `AGENT_QUOTEBOARD_TARGETS`:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_TARGETS=agents,claude sh
+```
+
+For CI or other non-interactive installs, set the values explicitly:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_NONINTERACTIVE=1 AGENT_QUOTEBOARD_MODE=strict AGENT_QUOTEBOARD_TARGETS=agents,claude,gemini,copilot sh
 ```
 
 ## Example Output

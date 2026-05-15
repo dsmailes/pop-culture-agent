@@ -15,6 +15,13 @@ Run this from the target repo:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
+When run in a terminal, the installer asks you to choose strict/improvise mode
+and which agent bridge files to create. Press Enter for the recommended
+defaults: strict mode and all supported bridge files.
+
+If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
+`.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
+
 The installer copies the `agent-quoteboard` directory into your repository, then
 adds bridge instructions for common coding agents:
 
@@ -44,7 +51,7 @@ bank quote fits:
 This is the recommended default because it reduces repetition and keeps the
 behavior predictable.
 
-Install improvisation mode with:
+Skip the prompt and install improvisation mode with:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=improvise sh
@@ -71,7 +78,7 @@ strict config line with the open config line.
 ## Install-Time Agent Targets
 
 By default, the installer targets `agents,claude,gemini,copilot`. To install
-only specific bridge files, set `AGENT_QUOTEBOARD_TARGETS`:
+only specific bridge files without prompting, set `AGENT_QUOTEBOARD_TARGETS`:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_TARGETS=agents,claude sh
