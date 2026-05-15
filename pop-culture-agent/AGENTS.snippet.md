@@ -1,8 +1,8 @@
-# Agent Quoteboard
+# Pop Culture Agent
 
 ## Purpose
 
-This repository uses a novelty agent behavior called **Agent Quoteboard**.
+This repository uses a novelty agent behavior called **Pop Culture Agent**.
 
 When the agent would normally emit generic transition phrases such as:
 
@@ -65,14 +65,14 @@ Default to **subtle**.
 
 ## Quote Bank
 
-Use `agent-quoteboard/quotes.json` as the preferred source for quote selection.
+Use `pop-culture-agent/quotes.json` as the preferred source for quote selection.
 For best results, include it directly from the repository root `AGENTS.md`
 immediately after this snippet, followed by exactly one quote source config:
 
 ```md
-@./agent-quoteboard/AGENTS.snippet.md
-@./agent-quoteboard/quotes.json
-@./agent-quoteboard/config.strict.md
+@./pop-culture-agent/AGENTS.snippet.md
+@./pop-culture-agent/quotes.json
+@./pop-culture-agent/config.strict.md
 ```
 
 Default recommendation: use `config.strict.md` to reduce repetition and keep
@@ -264,13 +264,13 @@ Build only this behavior file.
 Tasks:
 
 1. Add `AGENTS.md` at the repo root.
-2. Include the Agent Quoteboard behavior.
+2. Include the Pop Culture Agent behavior.
 3. Test with Codex on normal code tasks.
 4. Tune frequency if it becomes annoying.
 
 ### Phase 2 - Quote Bank
 
-Status: implemented in `agent-quoteboard/quotes.json`.
+Status: implemented in `pop-culture-agent/quotes.json`.
 
 Schema example:
 

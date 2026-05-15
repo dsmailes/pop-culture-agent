@@ -1,8 +1,8 @@
-# Agent Quoteboard Config
+# Pop Culture Agent Config
 
 Quote source mode: **open improvisation**.
 
-Prefer quotes from `agent-quoteboard/quotes.json`, but the agent may use a short,
+Prefer quotes from `pop-culture-agent/quotes.json`, but the agent may use a short,
 contextually appropriate quote, reference, or parody-style line outside the bank
 when the bank has no fresh fit.
 

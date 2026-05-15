@@ -1,6 +1,6 @@
-# Agent Quoteboard
+# Pop Culture Agent
 
-Agent Quoteboard is a small `AGENTS.md` behavior snippet that replaces bland
+Pop Culture Agent is a small `AGENTS.md` behavior snippet that replaces bland
 agent transition phrases with occasional short, bold pop-culture-style lines.
 
 It is intentionally prompt-only. It does not install dependencies or change
@@ -15,11 +15,11 @@ Run this from the target repo:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
-The installer copies the `agent-quoteboard` directory into your repository, then
+The installer copies the `pop-culture-agent` directory into your repository, then
 adds one line to your existing root `AGENTS.md`:
 
 ```md
-@./agent-quoteboard/AGENTS.md
+@./pop-culture-agent/AGENTS.md
 ```
 
 Keep your existing repo instructions in place. The snippet is additive.
@@ -29,7 +29,7 @@ Keep your existing repo instructions in place. The snippet is additive.
 Run the same installer. It creates a root `AGENTS.md` containing:
 
 ```md
-@./agent-quoteboard/AGENTS.md
+@./pop-culture-agent/AGENTS.md
 ```
 
 ## Install-Time Choice
@@ -37,7 +37,7 @@ Run the same installer. It creates a root `AGENTS.md` containing:
 Choose exactly one config file when installing:
 
 ```md
-@./agent-quoteboard/config.strict.md
+@./pop-culture-agent/config.strict.md
 ```
 
 Strict mode uses only `quotes.json`. If no bank quote fits, the agent skips the
@@ -45,7 +45,7 @@ quote. This is the recommended default because it reduces repetition and keeps
 the behavior predictable.
 
 ```md
-@./agent-quoteboard/config.open.md
+@./pop-culture-agent/config.open.md
 ```
 
 Open mode prefers `quotes.json`, but lets the agent improvise a short,
@@ -54,12 +54,12 @@ contextually appropriate line when the bank has no fresh fit.
 Install open mode with:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=open sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=open sh
 ```
 
 ## Uninstall
 
-Remove the include line from `AGENTS.md`, then delete the `agent-quoteboard`
+Remove the include line from `AGENTS.md`, then delete the `pop-culture-agent`
 directory.
 
 ## Tune

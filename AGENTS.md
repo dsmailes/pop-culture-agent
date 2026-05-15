@@ -1,1 +1,1 @@
-@./agent-quoteboard/AGENTS.md
+@./pop-culture-agent/AGENTS.md
