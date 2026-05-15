@@ -1,0 +1,70 @@
+#!/bin/sh
+set -eu
+
+repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+
+fail() {
+  echo "FAIL: $*" >&2
+  exit 1
+}
+
+assert_file_contains_line() {
+  file=$1
+  line=$2
+
+  [ -f "$file" ] || fail "missing file: $file"
+  grep -Fxq "$line" "$file" || fail "$file does not contain: $line"
+}
+
+assert_line_count() {
+  file=$1
+  line=$2
+  expected=$3
+  actual=$(grep -Fxc "$line" "$file" || true)
+
+  [ "$actual" = "$expected" ] || fail "$file contains '$line' $actual times, expected $expected"
+}
+
+tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/agent-quoteboard-test.XXXXXX")
+trap 'rm -rf "$tmpdir"' EXIT
+
+cd "$tmpdir"
+AGENT_QUOTEBOARD_RAW_URL="file://$repo_root" sh "$repo_root/install.sh" >/dev/null
+AGENT_QUOTEBOARD_RAW_URL="file://$repo_root" sh "$repo_root/install.sh" >/dev/null
+
+assert_file_contains_line AGENTS.md "@./agent-quoteboard/AGENTS.md"
+assert_file_contains_line CLAUDE.md "@./agent-quoteboard/AGENTS.md"
+assert_file_contains_line GEMINI.md "@./agent-quoteboard/AGENTS.md"
+assert_file_contains_line .github/copilot-instructions.md "Refer to [Agent Quoteboard](../agent-quoteboard/AGENTS.md) for agent progress-update style."
+
+assert_line_count AGENTS.md "@./agent-quoteboard/AGENTS.md" 1
+assert_line_count CLAUDE.md "@./agent-quoteboard/AGENTS.md" 1
+assert_line_count GEMINI.md "@./agent-quoteboard/AGENTS.md" 1
+assert_line_count .github/copilot-instructions.md "Refer to [Agent Quoteboard](../agent-quoteboard/AGENTS.md) for agent progress-update style." 1
+
+assert_file_contains_line agent-quoteboard/AGENTS.md "@./agent-quoteboard/config.strict.md"
+
+tmpdir_open=$(mktemp -d "${TMPDIR:-/tmp}/agent-quoteboard-test-open.XXXXXX")
+tmpdir_improvise=$(mktemp -d "${TMPDIR:-/tmp}/agent-quoteboard-test-improvise.XXXXXX")
+tmpdir_targets=$(mktemp -d "${TMPDIR:-/tmp}/agent-quoteboard-test-targets.XXXXXX")
+trap 'rm -rf "$tmpdir" "$tmpdir_open" "$tmpdir_improvise" "$tmpdir_targets"' EXIT
+
+cd "$tmpdir_open"
+AGENT_QUOTEBOARD_RAW_URL="file://$repo_root" AGENT_QUOTEBOARD_MODE=open sh "$repo_root/install.sh" >/dev/null
+
+assert_file_contains_line agent-quoteboard/AGENTS.md "@./agent-quoteboard/config.open.md"
+
+cd "$tmpdir_improvise"
+AGENT_QUOTEBOARD_RAW_URL="file://$repo_root" AGENT_QUOTEBOARD_MODE=improvise sh "$repo_root/install.sh" >/dev/null
+
+assert_file_contains_line agent-quoteboard/AGENTS.md "@./agent-quoteboard/config.open.md"
+
+cd "$tmpdir_targets"
+AGENT_QUOTEBOARD_RAW_URL="file://$repo_root" AGENT_QUOTEBOARD_TARGETS=agents,claude sh "$repo_root/install.sh" >/dev/null
+
+assert_file_contains_line AGENTS.md "@./agent-quoteboard/AGENTS.md"
+assert_file_contains_line CLAUDE.md "@./agent-quoteboard/AGENTS.md"
+[ ! -f GEMINI.md ] || fail "GEMINI.md should not be created for agents,claude targets"
+[ ! -f .github/copilot-instructions.md ] || fail "copilot instructions should not be created for agents,claude targets"
+
+echo "install tests passed"

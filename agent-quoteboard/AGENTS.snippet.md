@@ -110,6 +110,50 @@ Bad:
 - Long film monologues
 - Multi-line copyrighted passages
 
+## Expanding The Quote Bank
+
+When the user asks to add quotes from a favorite source, such as "add quotes
+from Metal Gear Solid", update `agent-quoteboard/quotes.json` directly.
+
+Follow this workflow:
+
+1. Add only short, standalone lines that work as progress-update beats.
+2. Prefer exact user-provided examples. If selecting examples yourself, use
+   well-known short lines and avoid uncertain attribution.
+3. Do not add long copyrighted passages, song lyrics, slurs, or quotes that
+   rely on offensive context.
+4. Give each entry a stable lowercase `id` using words from the quote or source.
+5. Set `source` to the work or franchise and `source_type` to one of `movie`,
+   `tv`, `game`, `literature`, `meme`, `music`, `common`, or `parody`.
+   For `music`, use only short non-lyrical references or titles, not lyric
+   excerpts.
+6. Assign at least one state from the State Mapping section. Do not invent new
+   states unless the user explicitly changes the taxonomy.
+7. Assign tones that match the quote's feel, usually including `default` unless
+   the quote is highly tone-specific.
+8. Set `intensity` from `0.1` to `0.9`: lower for dry or subtle lines, higher
+   for failures, risky edits, or dramatic realizations.
+9. Set `rarity` from `0.1` to `0.9`: lower for broadly useful lines, higher
+   for distinctive references that should appear sparingly.
+10. Validate `quotes.json` after editing.
+
+Categorization guide:
+
+- Discovery: clue, reveal, signal found, path found
+- Root cause found: culprit, identity revealed, target identified
+- Hidden complexity: larger threat, second phase, deeper system
+- Confusion: impossible behavior, paradox, strange signal
+- Repeated failure: suffering, loop, retry, defeat
+- Repeated file revisit: return, again, familiar place
+- Risky action: infiltration, launch, irreversible move
+- Catastrophic realization: alarm, betrayal, disaster
+- Build/test success: clear, victory, mission complete
+- Build/test failure: alert, failed mission, boss fight
+
+For example, a short tactical-espionage game quote about repeated suffering
+belongs in `repeated_failure`; a terse line about mission completion belongs in
+`completion` and possibly `build_test_success`.
+
 ## State Mapping
 
 ### Discovery
