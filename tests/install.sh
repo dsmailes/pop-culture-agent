@@ -64,9 +64,10 @@ assert_file_contains_text pop-culture-agent/quotes.json '"custom":true'
 tmpdir_open=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-open.XXXXXX")
 tmpdir_improvise=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-improvise.XXXXXX")
 tmpdir_targets=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-targets.XXXXXX")
+tmpdir_update=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-update.XXXXXX")
 tmpdir_global=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-global.XXXXXX")
 tmpdir_self=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-self.XXXXXX")
-trap 'rm -rf "$tmpdir" "$tmpdir_open" "$tmpdir_improvise" "$tmpdir_targets" "$tmpdir_global" "$tmpdir_self"' EXIT
+trap 'rm -rf "$tmpdir" "$tmpdir_open" "$tmpdir_improvise" "$tmpdir_targets" "$tmpdir_update" "$tmpdir_global" "$tmpdir_self"' EXIT
 
 cd "$tmpdir_open"
 POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_MODE=open sh "$repo_root/install.sh" >/dev/null
@@ -86,6 +87,24 @@ assert_file_contains_line CLAUDE.md "@./pop-culture-agent/AGENTS.md"
 [ ! -f GEMINI.md ] || fail "GEMINI.md should not be created for agents,claude targets"
 [ ! -f .github/copilot-instructions.md ] || fail "copilot instructions should not be created for agents,claude targets"
 
+cd "$tmpdir_update"
+mkdir -p pop-culture-agent
+printf '%s\n' "@./pop-culture-agent/config.strict.md" > pop-culture-agent/AGENTS.md
+printf '%s\n' "old snippet" > pop-culture-agent/AGENTS.snippet.md
+printf '%s\n' "old strict config" > pop-culture-agent/config.strict.md
+printf '%s\n' "old open config" > pop-culture-agent/config.open.md
+printf '%s\n' '{"custom":true}' > pop-culture-agent/quotes.json
+
+POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_UPDATE=1 sh "$repo_root/install.sh" >/dev/null
+
+assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/config.open.md"
+assert_file_contains_text pop-culture-agent/AGENTS.snippet.md "Default to **moderate**."
+assert_file_contains_text pop-culture-agent/config.open.md "open improvisation"
+assert_file_contains_text pop-culture-agent/quotes.json '"custom":true'
+assert_file_contains_text pop-culture-agent/quotes.json.latest '"schema_version"'
+assert_file_contains_text pop-culture-agent/AGENTS.md.bak "@./pop-culture-agent/config.strict.md"
+assert_file_contains_text pop-culture-agent/AGENTS.snippet.md.bak "old snippet"
+
 cd "$tmpdir_global"
 HOME="$tmpdir_global/home" POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh "$repo_root/install.sh" >/dev/null
 HOME="$tmpdir_global/home" POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh "$repo_root/install.sh" >/dev/null
@@ -95,7 +114,7 @@ global_include_line="@$global_agent_dir/AGENTS.md"
 
 assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/AGENTS.snippet.md"
 assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/quotes.json"
-assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/config.strict.md"
+assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/config.open.md"
 assert_file_contains_line "$tmpdir_global/home/.codex/AGENTS.md" "$global_include_line"
 assert_file_contains_line "$tmpdir_global/home/.claude/CLAUDE.md" "$global_include_line"
 assert_file_contains_line "$tmpdir_global/home/.gemini/GEMINI.md" "$global_include_line"

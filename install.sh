@@ -3,6 +3,7 @@ set -eu
 
 REPO_RAW_URL="${POP_CULTURE_AGENT_RAW_URL:-https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main}"
 REQUESTED_SCOPE="${POP_CULTURE_AGENT_SCOPE:-}"
+REQUESTED_UPDATE="${POP_CULTURE_AGENT_UPDATE:-}"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -10,18 +11,21 @@ while [ "$#" -gt 0 ]; do
     --global) REQUESTED_SCOPE=global ;;
     --scope=repo) REQUESTED_SCOPE=repo ;;
     --scope=global) REQUESTED_SCOPE=global ;;
+    --update) REQUESTED_UPDATE=1 ;;
     --help|-h)
       cat <<'EOF'
-Usage: install.sh [--repo|--global]
+Usage: install.sh [--repo|--global] [--update]
 
 Options:
   --repo      Install into the current repository (default).
   --global    Install into user-level agent instruction files.
+  --update    Refresh installed stock files, preserving quotes.json.
 
 Environment:
   POP_CULTURE_AGENT_SCOPE=repo|global
   POP_CULTURE_AGENT_MODE=strict|open|improvise
   POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot
+  POP_CULTURE_AGENT_UPDATE=1
 EOF
       exit 0
       ;;
@@ -73,19 +77,19 @@ prompt_mode() {
     {
       printf '\n'
       printf 'Pop Culture Agent mode:\n'
-      printf '  1) Strict - use only the quote bank (default)\n'
-      printf '  2) Improvise - allow short fallback lines\n'
+      printf '  1) Improvise - allow short fallback lines (default)\n'
+      printf '  2) Strict - use only the quote bank\n'
       printf 'Choose mode [1]: '
     } > /dev/tty
     IFS= read -r answer < /dev/tty || answer=
 
     case "$answer" in
-      2|i|I|improvise|Improvise) printf '%s\n' "improvise" ;;
-      *) printf '%s\n' "strict" ;;
+      2|s|S|strict|Strict) printf '%s\n' "strict" ;;
+      *) printf '%s\n' "improvise" ;;
     esac
   else
-    echo "Pop Culture Agent: no interactive terminal detected; using strict mode." >&2
-    printf '%s\n' "strict"
+    echo "Pop Culture Agent: no interactive terminal detected; using improvise mode." >&2
+    printf '%s\n' "improvise"
   fi
 }
 
@@ -147,6 +151,11 @@ prompt_targets() {
 SCOPE=$(prompt_scope)
 REQUESTED_MODE=$(prompt_mode)
 TARGETS=$(prompt_targets)
+
+case "$REQUESTED_UPDATE" in
+  ""|0|false|False|FALSE|no|No|NO) UPDATE=0 ;;
+  *) UPDATE=1 ;;
+esac
 
 case "$SCOPE" in
   repo|global) ;;
@@ -235,19 +244,76 @@ install_file_once() {
   fetch "$src" "$dest"
 }
 
-install_file_once "$REPO_RAW_URL/pop-culture-agent/AGENTS.snippet.md" "$INSTALL_DIR/AGENTS.snippet.md"
-install_file_once "$REPO_RAW_URL/pop-culture-agent/quotes.json" "$INSTALL_DIR/quotes.json"
-install_file_once "$REPO_RAW_URL/pop-culture-agent/config.strict.md" "$INSTALL_DIR/config.strict.md"
-install_file_once "$REPO_RAW_URL/pop-culture-agent/config.open.md" "$INSTALL_DIR/config.open.md"
+update_file_with_backup() {
+  src=$1
+  dest=$2
+  tmp="${dest}.tmp.$$"
 
-if [ -e "$INSTALL_DIR/AGENTS.md" ]; then
-  echo "Pop Culture Agent: preserving existing $INSTALL_DIR/AGENTS.md." >&2
-else
+  fetch "$src" "$tmp"
+  if [ -e "$dest" ]; then
+    cp "$dest" "$dest.bak"
+  fi
+  mv "$tmp" "$dest"
+}
+
+install_or_update_file() {
+  src=$1
+  dest=$2
+
+  if [ "$UPDATE" = 1 ]; then
+    update_file_with_backup "$src" "$dest"
+  else
+    install_file_once "$src" "$dest"
+  fi
+}
+
+install_or_update_quotes() {
+  src=$1
+  dest=$2
+
+  if [ "$UPDATE" = 1 ] && [ -e "$dest" ]; then
+    fetch "$src" "$dest.latest"
+    echo "Pop Culture Agent: preserving existing $dest; latest quote bank saved to $dest.latest." >&2
+  elif [ "$UPDATE" = 1 ]; then
+    fetch "$src" "$dest"
+  else
+    install_file_once "$src" "$dest"
+  fi
+}
+
+write_agent_file() {
+  dest=$1
+
   {
     echo "$SNIPPET_LINE"
     echo "$QUOTES_LINE"
     echo "$CONFIG_LINE"
-  } > "$INSTALL_DIR/AGENTS.md"
+  } > "$dest"
+}
+
+install_or_update_agent_file() {
+  dest=$1
+
+  if [ -e "$dest" ]; then
+    if [ "$UPDATE" = 1 ]; then
+      cp "$dest" "$dest.bak"
+      write_agent_file "$dest"
+    else
+      echo "Pop Culture Agent: preserving existing $dest." >&2
+    fi
+  else
+    write_agent_file "$dest"
+  fi
+}
+
+install_or_update_file "$REPO_RAW_URL/pop-culture-agent/AGENTS.snippet.md" "$INSTALL_DIR/AGENTS.snippet.md"
+install_or_update_quotes "$REPO_RAW_URL/pop-culture-agent/quotes.json" "$INSTALL_DIR/quotes.json"
+install_or_update_file "$REPO_RAW_URL/pop-culture-agent/config.strict.md" "$INSTALL_DIR/config.strict.md"
+install_or_update_file "$REPO_RAW_URL/pop-culture-agent/config.open.md" "$INSTALL_DIR/config.open.md"
+install_or_update_agent_file "$INSTALL_DIR/AGENTS.md"
+
+if [ "$UPDATE" = 1 ]; then
+  echo "Pop Culture Agent: update mode refreshed stock files." >&2
 fi
 
 has_target() {

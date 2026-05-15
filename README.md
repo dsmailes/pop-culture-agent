@@ -24,10 +24,10 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 When run in a terminal, the installer asks you to choose:
 
 - repo or global install scope
-- strict or improvise mode
+- improvise or strict mode
 - which agent bridge files to create
 
-Press Enter for the recommended defaults: repo scope, strict mode, and all
+Press Enter for the recommended defaults: repo scope, improvise mode, and all
 supported repo bridge files.
 
 To make the scope explicit in a one-line install, pass installer arguments with
@@ -82,21 +82,34 @@ The installer is idempotent and non-destructive: rerunning it creates any
 missing bundled files and bridge lines, but preserves existing files and does
 not duplicate bridge lines.
 
+To refresh an existing install to the latest stock prompts and configs, use
+update mode:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --update
+```
+
+Update mode replaces the stock files in `pop-culture-agent/` and writes `.bak`
+copies beside replaced files. It preserves an existing `quotes.json`; the latest
+upstream quote bank is saved beside it as `quotes.json.latest` so custom quotes
+can be merged deliberately.
+
 The installer refuses to run from the Pop Culture Agent source repo by default,
 so testing the installer here does not create local bridge files by accident.
 
 ## Choose A Mode
 
-Strict mode is the default. It uses only `quotes.json` and skips quotes when no
-bank quote fits.
+Improvise mode is the default. It prefers `quotes.json`, but lets the agent use
+a short, contextually appropriate fallback line when the bank has no fresh fit.
 
-To skip the prompt and install improvise mode directly, run:
+To skip the prompt and install strict mode directly, run:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=improvise sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=strict sh
 ```
 
-`open` is also accepted as an equivalent alias:
+You can also pass the default mode explicitly; `open` and `improvise` are
+equivalent:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=open sh
@@ -105,33 +118,33 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 Under the hood, the generated `pop-culture-agent/AGENTS.md` includes exactly one
 config file.
 
-Strict mode uses:
-
-```md
-@./pop-culture-agent/config.strict.md
-```
-
-This is the recommended default because it keeps the behavior predictable.
-
 Improvisation mode uses:
 
 ```md
 @./pop-culture-agent/config.open.md
 ```
 
-Improvisation mode prefers `quotes.json`, but lets the agent improvise a short
-outside-bank line when the bank has no fresh fit.
+This is the recommended default because it keeps the agent from going quiet
+when the quote bank has no exact fit.
 
-To start improvising later, edit `pop-culture-agent/AGENTS.md` and replace:
+Strict mode uses:
 
 ```md
 @./pop-culture-agent/config.strict.md
 ```
 
-with:
+Strict mode uses only `quotes.json` and skips quotes when no bank quote fits.
+
+To switch to strict mode later, edit `pop-culture-agent/AGENTS.md` and replace:
 
 ```md
 @./pop-culture-agent/config.open.md
+```
+
+with:
+
+```md
+@./pop-culture-agent/config.strict.md
 ```
 
 ## Choose Agent Targets
@@ -147,6 +160,12 @@ For CI or other non-interactive installs, set the values explicitly:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=repo POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot sh
+```
+
+To update non-interactively, set `POP_CULTURE_AGENT_UPDATE=1`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_UPDATE=1 sh
 ```
 
 To run a non-interactive global install:

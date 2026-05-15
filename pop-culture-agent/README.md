@@ -15,9 +15,9 @@ Run this from the target repo:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
-When run in a terminal, the installer asks you to choose strict/improvise mode
+When run in a terminal, the installer asks you to choose improvise/strict mode
 and which agent bridge files to create. Press Enter for the recommended
-defaults: strict mode and all supported bridge files.
+defaults: improvise mode and all supported bridge files.
 
 If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
 `.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
@@ -40,41 +40,57 @@ Keep your existing repo instructions in place. The snippet is additive: the
 installer creates missing files, preserves existing files, and will not
 duplicate existing bridge lines.
 
+## Update
+
+Rerunning the installer normally preserves existing installed files. To refresh
+stock prompts and configs to the latest version, use update mode:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --update
+```
+
+Update mode replaces the stock files in `pop-culture-agent/` and writes `.bak`
+copies beside replaced files. It preserves an existing `quotes.json`; the latest
+upstream quote bank is saved beside it as `quotes.json.latest` so custom quotes
+can be merged deliberately.
+
+For non-interactive updates, set `POP_CULTURE_AGENT_UPDATE=1`.
+
 ## Install-Time Choice
 
-Strict mode is the default. It uses only `quotes.json` and skips quotes when no
-bank quote fits:
-
-```md
-@./pop-culture-agent/config.strict.md
-```
-
-This is the recommended default because it reduces repetition and keeps the
-behavior predictable.
-
-Skip the prompt and install improvisation mode with:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=improvise sh
-```
-
-`open` is kept as an equivalent alias:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=open sh
-```
-
-Improvisation mode uses:
+Improvise mode is the default. It prefers `quotes.json`, but lets the agent use
+a short, contextually appropriate fallback line when the bank has no fresh fit:
 
 ```md
 @./pop-culture-agent/config.open.md
 ```
 
-It prefers `quotes.json`, but lets the agent improvise a short, contextually
-appropriate line when the bank has no fresh fit.
+This is the recommended default because it keeps the agent from going quiet
+when the quote bank has no exact fit.
 
-To start improvising later, edit `pop-culture-agent/AGENTS.md` and replace the
-strict config line with the open config line.
+Skip the prompt and install strict mode with:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=strict sh
+```
+
+You can also pass the default mode explicitly; `open` and `improvise` are
+equivalent:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=open sh
+```
+
+Strict mode uses:
+
+```md
+@./pop-culture-agent/config.strict.md
+```
+
+Strict mode uses only `quotes.json` and skips quotes when no bank quote fits.
+
+To switch to strict mode later, edit `pop-culture-agent/AGENTS.md` and replace
+the open config line with the strict config line.
 
 ## Install-Time Agent Targets
 
@@ -93,8 +109,8 @@ then delete the `pop-culture-agent` directory.
 ## Tune
 
 If the quotes feel too frequent, edit `AGENTS.snippet.md` and change the
-frequency guidance from `3-5 agent updates` to a larger interval such as
-`5-8 agent updates`. The installer preserves this file when rerun.
+frequency guidance from `1-3 meaningful progress updates` to a larger interval
+such as `3-5 agent updates`. The installer preserves this file when rerun.
 
 ## Quote Bank
 

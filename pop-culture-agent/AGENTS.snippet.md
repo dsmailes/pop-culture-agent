@@ -53,15 +53,16 @@ Good:
 
 ## Frequency
 
-Default to **subtle**.
+Default to **moderate**.
 
-- Do not use more than one quote every 3-5 agent updates.
+- Aim for one quote every 1-3 meaningful progress updates when a quote fits.
 - Do not use quotes in every response.
 - Do not interrupt technical explanations with jokes.
 - Prefer quote injection in progress updates, summaries, and final status notes.
 - Do not repeat the same quote in a session unless the user explicitly asks for
   a running gag.
-- If no fresh quote fits the moment, skip the quote.
+- If no fresh quote fits the moment, use a short open-mode fallback when allowed
+  by the installed config; otherwise skip the quote.
 
 ## Quote Bank
 
@@ -72,12 +73,12 @@ immediately after this snippet, followed by exactly one quote source config:
 ```md
 @./pop-culture-agent/AGENTS.snippet.md
 @./pop-culture-agent/quotes.json
-@./pop-culture-agent/config.strict.md
+@./pop-culture-agent/config.open.md
 ```
 
-Default recommendation: use `config.strict.md` to reduce repetition and keep
-the quote style predictable. Use `config.open.md` only when the user wants the
-agent to improvise outside the quote bank.
+Default recommendation: use `config.open.md` for more frequent, contextual
+progress lines. Use `config.strict.md` only when the user wants the agent to
+stay inside the quote bank and skip unmatched moments.
 
 Selection rules:
 
@@ -282,7 +283,8 @@ Do not:
 - invent copyrighted long passages
 - overdo references
 - quote every transition
-- use a quote when the user is frustrated or needs direct help
+- use a quote when the user is frustrated, dealing with a serious failure, or
+  needs a strictly direct answer
 
 ## Preferred Output Pattern
 
