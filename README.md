@@ -1,9 +1,10 @@
-# Agent Quoteboard
+# Pop Culture Agent
 
-Agent Quoteboard is a prompt-only `AGENTS.md` add-on for making agent progress
-updates a little more characterful. It replaces bland transition phrases with
-occasional short, bold pop-culture-style lines while keeping technical updates
-clear.
+Pop Culture Agent is a prompt-only add-on for making coding agent progress
+updates a little more characterful. It installs the **Agent Quoteboard**
+instructions into a target repository so compatible agents can replace bland
+transition phrases with occasional short, bold pop-culture-style lines while
+keeping technical updates clear.
 
 It is intentionally small:
 
@@ -14,52 +15,65 @@ It is intentionally small:
 
 ## Install
 
-Run this from the root of the repo where you want Agent Quoteboard installed:
+Run this from the root of the repo where you want Pop Culture Agent installed:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
-The installer downloads `agent-quoteboard/` and adds small bridge instructions
-for common coding agents:
+The installer downloads `agent-quoteboard/`, writes the selected quote config,
+and adds small bridge instructions for common coding agents:
 
 - `AGENTS.md` for Codex-style and other `AGENTS.md` readers
 - `CLAUDE.md` for Claude Code
 - `GEMINI.md` for Gemini CLI
 - `.github/copilot-instructions.md` for GitHub Copilot
 
+For `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`, the bridge line is:
+
 ```md
 @./agent-quoteboard/AGENTS.md
 ```
 
 For Copilot, the bridge is a Markdown reference to the same installed agent
-instructions because Copilot's repository instructions file does not use the
-same import convention.
+instructions:
+
+```md
+Refer to [Agent Quoteboard](../agent-quoteboard/AGENTS.md) for agent progress-update style.
+```
+
+The installer is idempotent: rerunning it refreshes the bundled files without
+duplicating bridge lines.
 
 ## Choose A Mode
 
 Strict mode is the default. It uses only `quotes.json` and skips quotes when no
 bank quote fits.
 
-To let the agent improvise at install time:
+To let the agent improvise at install time, install with:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=improvise sh
 ```
 
-`open` is kept as an equivalent alias:
+`open` is also accepted as an equivalent alias:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | AGENT_QUOTEBOARD_MODE=open sh
 ```
 
-Under the hood, use exactly one config file:
+Under the hood, the generated `agent-quoteboard/AGENTS.md` includes exactly one
+config file.
+
+Strict mode uses:
 
 ```md
 @./agent-quoteboard/config.strict.md
 ```
 
 This is the recommended default because it keeps the behavior predictable.
+
+Improvisation mode uses:
 
 ```md
 @./agent-quoteboard/config.open.md
