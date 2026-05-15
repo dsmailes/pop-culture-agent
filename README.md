@@ -23,17 +23,32 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 
 When run in a terminal, the installer asks you to choose:
 
+- repo or global install scope
 - strict or improvise mode
 - which agent bridge files to create
 
-Press Enter for the recommended defaults: strict mode and all supported bridge
-files.
+Press Enter for the recommended defaults: repo scope, strict mode, and all
+supported repo bridge files.
+
+To make the scope explicit in a one-line install, pass installer arguments with
+`sh -s --`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --repo
+```
+
+For a global install:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --global
+```
 
 If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
 `.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
 
-The installer downloads `pop-culture-agent/`, writes the selected quote config,
-and adds small bridge instructions for common coding agents:
+In repo scope, the installer downloads `pop-culture-agent/`, writes the
+selected quote config, and adds small bridge instructions for common coding
+agents:
 
 - `AGENTS.md` for Codex-style and other `AGENTS.md` readers
 - `CLAUDE.md` for Claude Code
@@ -52,6 +67,16 @@ instructions:
 ```md
 Refer to [Pop Culture Agent](../pop-culture-agent/AGENTS.md) for agent progress-update style.
 ```
+
+In global scope, the installer writes the shared agent files to
+`~/.pop-culture-agent` by default and adds absolute bridge lines to:
+
+- `~/.codex/AGENTS.md`
+- `~/.claude/CLAUDE.md`
+- `~/.gemini/GEMINI.md`
+
+Global scope skips Copilot because Copilot instructions are repo-level
+`.github/copilot-instructions.md` files.
 
 The installer is idempotent and non-destructive: rerunning it creates any
 missing bundled files and bridge lines, but preserves existing files and does
@@ -121,7 +146,13 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 For CI or other non-interactive installs, set the values explicitly:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=repo POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot sh
+```
+
+To run a non-interactive global install:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh
 ```
 
 ## Example Output
