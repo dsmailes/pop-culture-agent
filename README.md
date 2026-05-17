@@ -89,6 +89,12 @@ update mode:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --update
 ```
 
+For a global install, include `--global`:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --global --update
+```
+
 Update mode replaces the stock files in `pop-culture-agent/` and writes `.bak`
 copies beside replaced files. It preserves an existing `quotes.json`; the latest
 upstream quote bank is saved beside it as `quotes.json.latest` so custom quotes
