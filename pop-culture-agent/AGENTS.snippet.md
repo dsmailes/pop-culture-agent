@@ -93,6 +93,22 @@ Selection rules:
    the bank has no fit. In open mode, outside-bank lines are allowed only as a
    fallback.
 
+Variety rules:
+
+1. Treat the current session as having a small recent-history window. Avoid
+   reusing the same quote, source, franchise, tone mode, or joke shape inside
+   the last 5 quote-style lines when another fit exists.
+2. Prefer underused sources and source types before famous defaults. Do not let
+   one franchise, meme, or catchphrase style dominate a session.
+3. In open mode, if the best bank quote would repeat a recent source, joke
+   shape, or mood, improvise a short original/parody-style line instead.
+4. Vary sentence shapes: mix terse fragments, dry status lines, cinematic
+   beats, game-style status text, and detective-style reveals.
+5. Prefer subtle low-intensity lines for routine progress. Save high-intensity
+   lines for genuine failures, risky edits, or surprising discoveries.
+6. If two consecutive quote-style lines would both read as dramatic, choose a
+   quieter dry line or skip the quote.
+
 ## Quote Length
 
 Keep quotes short. Avoid long copyrighted lyrics or long verbatim passages.
@@ -137,6 +153,14 @@ Follow this workflow:
 9. Set `rarity` from `0.1` to `0.9`: lower for broadly useful lines, higher
    for distinctive references that should appear sparingly.
 10. Validate `quotes.json` after editing.
+
+Coverage targets:
+
+- Keep at least 6 usable entries for each reasoning state.
+- Keep at least 6 usable entries for each tone mode.
+- Prefer a mix of real short references, common phrases, and original
+  parody-style lines so strict mode remains fresh without depending on
+  copyrighted catchphrases.
 
 Categorization guide:
 

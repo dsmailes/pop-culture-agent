@@ -290,6 +290,316 @@
       "tones": ["survival_horror", "exhausted_senior_engineer"],
       "intensity": 0.4,
       "rarity": 0.5
+    },
+    {
+      "id": "signal_in_static",
+      "quote": "Signal in the static.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["discovery"],
+      "tones": ["cyberpunk", "noir"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "breadcrumb_trail_glows",
+      "quote": "The breadcrumb trail glows.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["discovery"],
+      "tones": ["default", "cyberpunk"],
+      "intensity": 0.3,
+      "rarity": 0.5
+    },
+    {
+      "id": "case_file_opens",
+      "quote": "The case file opens itself.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["discovery"],
+      "tones": ["noir", "default"],
+      "intensity": 0.3,
+      "rarity": 0.5
+    },
+    {
+      "id": "culprit_has_a_nametag",
+      "quote": "The culprit wore a nametag.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["root_cause_found"],
+      "tones": ["noir", "exhausted_senior_engineer"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "found_the_loose_wire",
+      "quote": "Found the loose wire.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["root_cause_found"],
+      "tones": ["default", "exhausted_senior_engineer"],
+      "intensity": 0.2,
+      "rarity": 0.3
+    },
+    {
+      "id": "smoking_stacktrace",
+      "quote": "Smoking stacktrace.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["root_cause_found", "build_test_failure"],
+      "tones": ["noir", "default"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    },
+    {
+      "id": "plot_got_subplots",
+      "quote": "The plot has subplots.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["hidden_complexity"],
+      "tones": ["default", "noir"],
+      "intensity": 0.4,
+      "rarity": 0.4
+    },
+    {
+      "id": "new_layer_new_rules",
+      "quote": "New layer, new rules.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["hidden_complexity"],
+      "tones": ["cyberpunk", "default"],
+      "intensity": 0.4,
+      "rarity": 0.4
+    },
+    {
+      "id": "map_was_the_tutorial",
+      "quote": "The map was the tutorial.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["hidden_complexity"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.5,
+      "rarity": 0.5
+    },
+    {
+      "id": "physics_left_chat",
+      "quote": "Physics left the chat.",
+      "source": "meme",
+      "source_type": "meme",
+      "states": ["confusion"],
+      "tones": ["default", "exhausted_senior_engineer"],
+      "intensity": 0.5,
+      "rarity": 0.5
+    },
+    {
+      "id": "numbers_are_haunted",
+      "quote": "The numbers are haunted.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["confusion"],
+      "tones": ["survival_horror", "default"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    },
+    {
+      "id": "logic_took_detour",
+      "quote": "Logic took a detour.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["confusion"],
+      "tones": ["exhausted_senior_engineer", "default"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "same_wall_new_dent",
+      "quote": "Same wall, new dent.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_failure"],
+      "tones": ["exhausted_senior_engineer", "default"],
+      "intensity": 0.5,
+      "rarity": 0.4
+    },
+    {
+      "id": "checkpoint_was_not_saved",
+      "quote": "Checkpoint was not saved.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_failure"],
+      "tones": ["retro_game", "survival_horror"],
+      "intensity": 0.6,
+      "rarity": 0.5
+    },
+    {
+      "id": "round_three_same_boss",
+      "quote": "Round three, same boss.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_failure", "build_test_failure"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.6,
+      "rarity": 0.4
+    },
+    {
+      "id": "wire_cutters_out",
+      "quote": "Wire cutters out.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["risky_action"],
+      "tones": ["default", "noir"],
+      "intensity": 0.5,
+      "rarity": 0.4
+    },
+    {
+      "id": "entering_the_airlock",
+      "quote": "Entering the airlock.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["risky_action"],
+      "tones": ["survival_horror", "cyberpunk"],
+      "intensity": 0.5,
+      "rarity": 0.5
+    },
+    {
+      "id": "save_before_boss",
+      "quote": "Save before the boss.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["risky_action"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.4,
+      "rarity": 0.4
+    },
+    {
+      "id": "alarms_are_learning",
+      "quote": "The alarms are learning.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["catastrophic_realization"],
+      "tones": ["survival_horror", "cyberpunk"],
+      "intensity": 0.7,
+      "rarity": 0.5
+    },
+    {
+      "id": "floor_was_never_floor",
+      "quote": "The floor was never floor.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["catastrophic_realization"],
+      "tones": ["survival_horror", "default"],
+      "intensity": 0.7,
+      "rarity": 0.6
+    },
+    {
+      "id": "containment_has_notes",
+      "quote": "Containment has notes.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["catastrophic_realization"],
+      "tones": ["exhausted_senior_engineer", "default"],
+      "intensity": 0.6,
+      "rarity": 0.5
+    },
+    {
+      "id": "old_crime_new_evidence",
+      "quote": "Old crime, new evidence.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_file_revisit"],
+      "tones": ["noir", "default"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "back_in_the_maze",
+      "quote": "Back in the maze.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_file_revisit"],
+      "tones": ["survival_horror", "default"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    },
+    {
+      "id": "reopened_the_cold_case",
+      "quote": "Cold case reopened.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["repeated_file_revisit"],
+      "tones": ["noir", "exhausted_senior_engineer"],
+      "intensity": 0.3,
+      "rarity": 0.4
+    },
+    {
+      "id": "credits_can_roll",
+      "quote": "Roll credits.",
+      "source": "common phrase",
+      "source_type": "common",
+      "states": ["completion"],
+      "tones": ["default", "retro_game"],
+      "intensity": 0.2,
+      "rarity": 0.4
+    },
+    {
+      "id": "case_closed_coffee_cold",
+      "quote": "Case closed. Coffee cold.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["completion"],
+      "tones": ["noir", "exhausted_senior_engineer"],
+      "intensity": 0.3,
+      "rarity": 0.5
+    },
+    {
+      "id": "quest_log_clear",
+      "quote": "Quest log clear.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["completion", "build_test_success"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.2,
+      "rarity": 0.4
+    },
+    {
+      "id": "all_lights_green",
+      "quote": "All lights green.",
+      "source": "common phrase",
+      "source_type": "common",
+      "states": ["build_test_success"],
+      "tones": ["default", "cyberpunk"],
+      "intensity": 0.2,
+      "rarity": 0.3
+    },
+    {
+      "id": "boss_bar_empty",
+      "quote": "Boss bar empty.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["build_test_success"],
+      "tones": ["retro_game", "default"],
+      "intensity": 0.4,
+      "rarity": 0.5
+    },
+    {
+      "id": "tests_left_no_note",
+      "quote": "The tests left no note.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["build_test_failure"],
+      "tones": ["noir", "exhausted_senior_engineer"],
+      "intensity": 0.5,
+      "rarity": 0.5
+    },
+    {
+      "id": "red_screen_encounter",
+      "quote": "Red screen encounter.",
+      "source": "parody",
+      "source_type": "parody",
+      "states": ["build_test_failure"],
+      "tones": ["retro_game", "survival_horror"],
+      "intensity": 0.6,
+      "rarity": 0.5
     }
   ]
 }
