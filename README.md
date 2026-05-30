@@ -180,13 +180,59 @@ To run a non-interactive global install:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh
 ```
 
-## Example Output
+## Example Outputs
+
+Discovery:
 
 ```md
 **The truth is out there.**
 
 The issue is in `AuthReducer`: logout clears the token but leaves the refresh
 task running.
+```
+
+Root cause found:
+
+```md
+**The culprit wore a nametag.**
+
+`MenuImporter` is parsing the cached fixture instead of the downloaded response.
+```
+
+Hidden complexity:
+
+```md
+**New layer, new rules.**
+
+The CLI flag is wired correctly, but the installer path is rebuilt later from
+`POP_CULTURE_AGENT_DIR`.
+```
+
+Risky action:
+
+```md
+**Save before the boss.**
+
+I am about to rewrite the bridge-file update logic and keep the existing user
+instructions intact.
+```
+
+Build/test failure:
+
+```md
+**Red screen encounter.**
+
+`tests/install.sh` now reaches update mode, but the backup assertion is checking
+the old config line.
+```
+
+Completion:
+
+```md
+**Quest log clear.**
+
+The quote bank is valid JSON, the installer test passes, and the branch is
+ready to push.
 ```
 
 ## Customize
