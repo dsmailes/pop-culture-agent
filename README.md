@@ -1,10 +1,12 @@
 # Pop Culture Agent
 
-Pop Culture Agent is a prompt-only add-on for making coding agent progress
-updates a little more characterful. It installs pop-culture-style progress
-instructions into a target repository so compatible agents can replace bland
-transition phrases with occasional short, bold lines while keeping technical
-updates clear.
+Give your coding agent better lines.
+
+Pop Culture Agent is a prompt-only add-on that makes coding agent progress
+updates feel more like pop-culture beats than boilerplate status messages.
+During install, you can name up to three favorite films, games, shows, or
+franchises, and the agent will bias short references toward those sources when
+they fit the moment.
 
 It is intentionally small:
 
@@ -12,6 +14,40 @@ It is intentionally small:
 - no runtime code
 - no dependencies
 - no build step
+- no quote database
+
+It installs `AGENTS.md` instructions that compatible coding agents can read.
+The agent still leads with useful technical updates; the references are just
+short, occasional flavor at meaningful transitions.
+
+## What It Looks Like
+
+Before:
+
+```text
+Now I have enough context.
+```
+
+After:
+
+```md
+**Enhance.**
+
+The issue is in `AuthReducer`: logout clears the token but leaves the refresh
+task running.
+```
+
+With favorites configured:
+
+```md
+**Snake? Snake!**
+
+The same installer test is failing again, so I’m checking whether the rerun path
+is still preserving stale generated files.
+```
+
+The point is not to quote constantly. The agent should use a reference only when
+it fits the reasoning state and skip the quote when it would feel forced.
 
 ## Install
 
@@ -100,7 +136,7 @@ Update mode replaces the stock prompt files in `pop-culture-agent/` and writes
 The installer refuses to run from the Pop Culture Agent source repo by default,
 so testing the installer here does not create local bridge files by accident.
 
-## Reference Selection
+## Favorite Sources
 
 The generated `pop-culture-agent/AGENTS.md` includes the behavior snippet and
 one generated preferences file plus the open selection config:
@@ -126,6 +162,20 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 Existing `preferences.md` files are preserved on rerun. In update mode, passing
 `POP_CULTURE_AGENT_FAVORITES` refreshes `preferences.md` and writes a `.bak`
 copy first.
+
+Example generated preferences:
+
+```md
+# Pop Culture Agent Preferences
+
+Prefer short, recognizable references from these user-favorite sources when they fit the current reasoning state:
+
+- Scream
+- Metal Gear Solid
+- Alien
+
+If none of these sources has a clean fit, choose another varied pop-culture reference or skip the quote.
+```
 
 ## Choose Agent Targets
 

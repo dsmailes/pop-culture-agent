@@ -1,10 +1,44 @@
 # Pop Culture Agent
 
-Pop Culture Agent is a small `AGENTS.md` behavior snippet that replaces bland
-agent transition phrases with occasional short, bold pop-culture-style lines.
+Give your coding agent better lines.
+
+Pop Culture Agent is a small `AGENTS.md` behavior snippet that makes coding
+agent progress updates feel more like pop-culture beats than boilerplate status
+messages. During install, you can name up to three favorite films, games, shows,
+or franchises, and the agent will bias short references toward those sources
+when they fit the moment.
 
 It is intentionally prompt-only. It does not install dependencies or change
 runtime code.
+
+## What It Looks Like
+
+Before:
+
+```text
+Now I have enough context.
+```
+
+After:
+
+```md
+**Enhance.**
+
+The issue is in `AuthReducer`: logout clears the token but leaves the refresh
+task running.
+```
+
+With favorites configured:
+
+```md
+**Snake? Snake!**
+
+The same installer test is failing again, so I’m checking whether the rerun path
+is still preserving stale generated files.
+```
+
+The point is not to quote constantly. The agent should use a reference only when
+it fits the reasoning state and skip the quote when it would feel forced.
 
 ## Install
 
