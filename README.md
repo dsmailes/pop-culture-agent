@@ -20,6 +20,8 @@ It installs `AGENTS.md` instructions that compatible coding agents can read.
 The agent still leads with useful technical updates; the references are just
 short, occasional flavor at meaningful transitions.
 
+![Terminal screenshot showing three Pop Culture Agent progress updates](assets/terminal-examples.svg)
+
 ## What It Looks Like
 
 Before:
