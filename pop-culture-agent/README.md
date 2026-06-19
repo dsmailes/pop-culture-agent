@@ -4,8 +4,7 @@ Pop Culture Agent is a small `AGENTS.md` behavior snippet that replaces bland
 agent transition phrases with occasional short, bold pop-culture-style lines.
 
 It is intentionally prompt-only. It does not install dependencies or change
-runtime code. The optional quote bank is data-only JSON used to reduce
-repetition.
+runtime code.
 
 ## Install
 
@@ -15,9 +14,9 @@ Run this from the target repo:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
-When run in a terminal, the installer asks you to choose improvise/strict mode
-and which agent bridge files to create. Press Enter for the recommended
-defaults: improvise mode and all supported bridge files.
+When run in a terminal, the installer asks for up to three favorite films,
+games, shows, or franchises, then asks which agent bridge files to create. Press
+Enter for the recommended defaults, including no favorite-source preferences.
 
 If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
 `.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
@@ -56,47 +55,35 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 ```
 
 Update mode replaces the stock files in `pop-culture-agent/` and writes `.bak`
-copies beside replaced files. It preserves an existing `quotes.json`; the latest
-upstream quote bank is saved beside it as `quotes.json.latest` so custom quotes
-can be merged deliberately.
+copies beside replaced files.
 
 For non-interactive updates, set `POP_CULTURE_AGENT_UPDATE=1`.
 
-## Install-Time Choice
+## Reference Selection
 
-Improvise mode is the default. It prefers `quotes.json`, but lets the agent use
-a short, contextually appropriate fallback line when the bank has no fresh fit:
+The installed agent uses open reference selection:
 
 ```md
+@./pop-culture-agent/AGENTS.snippet.md
+@./pop-culture-agent/preferences.md
 @./pop-culture-agent/config.open.md
 ```
 
-This is the recommended default because it keeps the agent from going quiet
-when the quote bank has no exact fit.
+The agent chooses short, recognizable references from the model's own
+pop-culture knowledge. There is no strict bank mode and no bundled quote list.
+If no familiar reference cleanly matches the reasoning state, the agent should
+skip the quote instead of forcing a generic one.
 
-Skip the prompt and install strict mode with:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=strict sh
-```
-
-You can also pass the default mode explicitly; `open` and `improvise` are
-equivalent:
+To set favorite sources non-interactively, use `POP_CULTURE_AGENT_FAVORITES`
+with up to three comma-separated values:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=open sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_FAVORITES="Scream, Metal Gear Solid, Alien" sh
 ```
 
-Strict mode uses:
-
-```md
-@./pop-culture-agent/config.strict.md
-```
-
-Strict mode uses only `quotes.json` and skips quotes when no bank quote fits.
-
-To switch to strict mode later, edit `pop-culture-agent/AGENTS.md` and replace
-the open config line with the strict config line.
+Existing `preferences.md` files are preserved on rerun. In update mode, passing
+`POP_CULTURE_AGENT_FAVORITES` refreshes `preferences.md` and writes a `.bak`
+copy first.
 
 ## Install-Time Agent Targets
 
@@ -118,43 +105,19 @@ If the quotes feel too frequent, edit `AGENTS.snippet.md` and change the
 frequency guidance from `1-3 meaningful progress updates` to a larger interval
 such as `3-5 agent updates`. The installer preserves this file when rerun.
 
-## Quote Bank
+## Tune Sources
 
-`quotes.json` contains reusable quote entries tagged by reasoning state and
-tone. Add new entries there when a phrase gets stale.
-
-You can ask your coding agent to add quotes from a favorite source:
+You can steer the agent later by editing `preferences.md`:
 
 ```md
-Add short quotes from Metal Gear Solid to Pop Culture Agent.
+- Scream
+- Metal Gear Solid
+- Alien
 ```
 
-The installed instructions tell the agent to choose short, standalone lines,
-categorize them by reasoning state, assign matching tones, and validate the JSON.
-Providing exact favorite lines gives the agent the cleanest input.
-
-Each quote should stay short and use this shape:
-
-```json
-{
-  "id": "bigger_boat",
-  "quote": "We're gonna need a bigger boat.",
-  "source": "Jaws",
-  "source_type": "movie",
-  "states": ["hidden_complexity"],
-  "tones": ["default", "survival_horror"],
-  "intensity": 0.7,
-  "rarity": 0.2
-}
-```
-
-Use `states` to decide when a quote applies, `tones` to match the requested
-style, `intensity` to avoid over-dramatizing routine updates, and `rarity` to
-keep distinctive quotes from showing up too often.
-
-Agents should render selected quote text as bold Markdown without surrounding
+Agents should render selected reference text as bold Markdown without surrounding
 inverted commas, for example:
 
 ```md
-**We're gonna need a bigger boat.**
+**See you, space cowboy.**
 ```

@@ -2,13 +2,16 @@
 
 Quote source mode: **open improvisation**.
 
-Prefer quotes from `pop-culture-agent/quotes.json`, but the agent may use a short,
-contextually appropriate quote, reference, or parody-style line outside the bank
-when the bank has no fresh fit.
+Use short, recognizable pop-culture lines from the model's own knowledge when
+they are contextually appropriate, safe, and not overused.
 
-In open mode, "fresh fit" includes variety. If the bank quote would feel too
-similar to a recent quote-style line in source, tone, joke shape, or intensity,
-improvise a short original/parody-style line instead of forcing the bank.
+In open mode, "fresh fit" includes recognizability, semantic fit, and variety.
+If no familiar line cleanly matches the current reasoning state, skip the quote
+instead of forcing a generic one.
 
-Outside-bank lines must still follow the frequency, tone, safety, length, and
-formatting rules in `AGENTS.snippet.md`.
+Do not treat examples in `AGENTS.snippet.md` as defaults. Prefer a fresh
+recognizable line from a different source type or franchise when the examples
+would otherwise be reused.
+
+References must still follow the frequency, tone, safety, length, and formatting
+rules in `AGENTS.snippet.md`.

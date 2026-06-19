@@ -30,7 +30,7 @@ assert_file_contains_text() {
   text=$2
 
   [ -f "$file" ] || fail "missing file: $file"
-  grep -Fq "$text" "$file" || fail "$file does not contain expected text: $text"
+  grep -Fq -- "$text" "$file" || fail "$file does not contain expected text: $text"
 }
 
 tmpdir=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test.XXXXXX")
@@ -40,7 +40,6 @@ cd "$tmpdir"
 mkdir -p pop-culture-agent .github
 printf '%s\n' "# Existing agents" "Keep this project rule." > AGENTS.md
 printf '%s\n' "# Existing installed agent" "Keep this local mode." > pop-culture-agent/AGENTS.md
-printf '%s\n' '{"custom":true}' > pop-culture-agent/quotes.json
 printf '%s\n' "# Existing Copilot instructions" > .github/copilot-instructions.md
 
 POP_CULTURE_AGENT_RAW_URL="file://$repo_root" sh "$repo_root/install.sh" >/dev/null
@@ -59,25 +58,14 @@ assert_line_count .github/copilot-instructions.md "Refer to [Pop Culture Agent](
 assert_file_contains_text AGENTS.md "Keep this project rule."
 assert_file_contains_text .github/copilot-instructions.md "# Existing Copilot instructions"
 assert_file_contains_text pop-culture-agent/AGENTS.md "Keep this local mode."
-assert_file_contains_text pop-culture-agent/quotes.json '"custom":true'
+assert_file_contains_text pop-culture-agent/preferences.md "Prefer short, recognizable references"
 
-tmpdir_open=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-open.XXXXXX")
-tmpdir_improvise=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-improvise.XXXXXX")
 tmpdir_targets=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-targets.XXXXXX")
+tmpdir_favorites=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-favorites.XXXXXX")
 tmpdir_update=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-update.XXXXXX")
 tmpdir_global=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-global.XXXXXX")
 tmpdir_self=$(mktemp -d "${TMPDIR:-/tmp}/pop-culture-agent-test-self.XXXXXX")
-trap 'rm -rf "$tmpdir" "$tmpdir_open" "$tmpdir_improvise" "$tmpdir_targets" "$tmpdir_update" "$tmpdir_global" "$tmpdir_self"' EXIT
-
-cd "$tmpdir_open"
-POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_MODE=open sh "$repo_root/install.sh" >/dev/null
-
-assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/config.open.md"
-
-cd "$tmpdir_improvise"
-POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_MODE=improvise sh "$repo_root/install.sh" >/dev/null
-
-assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/config.open.md"
+trap 'rm -rf "$tmpdir" "$tmpdir_targets" "$tmpdir_favorites" "$tmpdir_update" "$tmpdir_global" "$tmpdir_self"' EXIT
 
 cd "$tmpdir_targets"
 POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_TARGETS=agents,claude sh "$repo_root/install.sh" >/dev/null
@@ -87,22 +75,35 @@ assert_file_contains_line CLAUDE.md "@./pop-culture-agent/AGENTS.md"
 [ ! -f GEMINI.md ] || fail "GEMINI.md should not be created for agents,claude targets"
 [ ! -f .github/copilot-instructions.md ] || fail "copilot instructions should not be created for agents,claude targets"
 
+cd "$tmpdir_favorites"
+POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_FAVORITES="Scream, Metal Gear Solid, Alien, Extra" sh "$repo_root/install.sh" >/dev/null
+
+assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/AGENTS.snippet.md"
+assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/preferences.md"
+assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/config.open.md"
+assert_file_contains_text pop-culture-agent/preferences.md "- Scream"
+assert_file_contains_text pop-culture-agent/preferences.md "- Metal Gear Solid"
+assert_file_contains_text pop-culture-agent/preferences.md "- Alien"
+if grep -Fq -- "- Extra" pop-culture-agent/preferences.md; then
+  fail "preferences should only include the first three favorites"
+fi
+
 cd "$tmpdir_update"
 mkdir -p pop-culture-agent
-printf '%s\n' "@./pop-culture-agent/config.strict.md" > pop-culture-agent/AGENTS.md
+printf '%s\n' "@./pop-culture-agent/old-config.md" > pop-culture-agent/AGENTS.md
 printf '%s\n' "old snippet" > pop-culture-agent/AGENTS.snippet.md
-printf '%s\n' "old strict config" > pop-culture-agent/config.strict.md
+printf '%s\n' "old preferences" > pop-culture-agent/preferences.md
 printf '%s\n' "old open config" > pop-culture-agent/config.open.md
-printf '%s\n' '{"custom":true}' > pop-culture-agent/quotes.json
 
 POP_CULTURE_AGENT_RAW_URL="file://$repo_root" POP_CULTURE_AGENT_UPDATE=1 sh "$repo_root/install.sh" >/dev/null
 
+assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/AGENTS.snippet.md"
+assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/preferences.md"
 assert_file_contains_line pop-culture-agent/AGENTS.md "@./pop-culture-agent/config.open.md"
 assert_file_contains_text pop-culture-agent/AGENTS.snippet.md "Default to **moderate**."
 assert_file_contains_text pop-culture-agent/config.open.md "open improvisation"
-assert_file_contains_text pop-culture-agent/quotes.json '"custom":true'
-assert_file_contains_text pop-culture-agent/quotes.json.latest '"schema_version"'
-assert_file_contains_text pop-culture-agent/AGENTS.md.bak "@./pop-culture-agent/config.strict.md"
+assert_file_contains_text pop-culture-agent/preferences.md "old preferences"
+assert_file_contains_text pop-culture-agent/AGENTS.md.bak "@./pop-culture-agent/old-config.md"
 assert_file_contains_text pop-culture-agent/AGENTS.snippet.md.bak "old snippet"
 
 cd "$tmpdir_global"
@@ -113,7 +114,7 @@ global_agent_dir="$tmpdir_global/home/.pop-culture-agent"
 global_include_line="@$global_agent_dir/AGENTS.md"
 
 assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/AGENTS.snippet.md"
-assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/quotes.json"
+assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/preferences.md"
 assert_file_contains_line "$global_agent_dir/AGENTS.md" "@$global_agent_dir/config.open.md"
 assert_file_contains_line "$tmpdir_global/home/.codex/AGENTS.md" "$global_include_line"
 assert_file_contains_line "$tmpdir_global/home/.claude/CLAUDE.md" "$global_include_line"
@@ -126,8 +127,7 @@ assert_line_count "$tmpdir_global/home/.gemini/GEMINI.md" "$global_include_line"
 mkdir -p "$tmpdir_self/pop-culture-agent"
 cp "$repo_root/install.sh" "$tmpdir_self/install.sh"
 cp "$repo_root/pop-culture-agent/AGENTS.snippet.md" "$tmpdir_self/pop-culture-agent/AGENTS.snippet.md"
-cp "$repo_root/pop-culture-agent/quotes.json" "$tmpdir_self/pop-culture-agent/quotes.json"
-cp "$repo_root/pop-culture-agent/config.strict.md" "$tmpdir_self/pop-culture-agent/config.strict.md"
+printf '%s\n' "# Pop Culture Agent Preferences" > "$tmpdir_self/pop-culture-agent/preferences.md"
 cp "$repo_root/pop-culture-agent/config.open.md" "$tmpdir_self/pop-culture-agent/config.open.md"
 
 cd "$tmpdir_self"

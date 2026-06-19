@@ -19,11 +19,11 @@ Usage: install.sh [--repo|--global] [--update]
 Options:
   --repo      Install into the current repository (default).
   --global    Install into user-level agent instruction files.
-  --update    Refresh installed stock files, preserving quotes.json.
+  --update    Refresh installed stock prompt files.
 
 Environment:
   POP_CULTURE_AGENT_SCOPE=repo|global
-  POP_CULTURE_AGENT_MODE=strict|open|improvise
+  POP_CULTURE_AGENT_FAVORITES="Scream, Metal Gear Solid, Alien"
   POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot
   POP_CULTURE_AGENT_UPDATE=1
 EOF
@@ -64,32 +64,6 @@ prompt_scope() {
   else
     echo "Pop Culture Agent: no interactive terminal detected; using repo scope." >&2
     printf '%s\n' "repo"
-  fi
-}
-
-prompt_mode() {
-  if [ "${POP_CULTURE_AGENT_MODE+x}" = x ]; then
-    printf '%s\n' "$POP_CULTURE_AGENT_MODE"
-    return
-  fi
-
-  if can_prompt; then
-    {
-      printf '\n'
-      printf 'Pop Culture Agent mode:\n'
-      printf '  1) Improvise - allow short fallback lines (default)\n'
-      printf '  2) Strict - use only the quote bank\n'
-      printf 'Choose mode [1]: '
-    } > /dev/tty
-    IFS= read -r answer < /dev/tty || answer=
-
-    case "$answer" in
-      2|s|S|strict|Strict) printf '%s\n' "strict" ;;
-      *) printf '%s\n' "improvise" ;;
-    esac
-  else
-    echo "Pop Culture Agent: no interactive terminal detected; using improvise mode." >&2
-    printf '%s\n' "improvise"
   fi
 }
 
@@ -148,8 +122,28 @@ prompt_targets() {
   fi
 }
 
+prompt_favorites() {
+  if [ "${POP_CULTURE_AGENT_FAVORITES+x}" = x ]; then
+    printf '%s\n' "$POP_CULTURE_AGENT_FAVORITES"
+    return
+  fi
+
+  if can_prompt; then
+    {
+      printf '\n'
+      printf 'Favorite films, games, shows, or franchises:\n'
+      printf '  Enter up to 3, comma-separated. Leave blank to skip.\n'
+      printf 'Favorites: '
+    } > /dev/tty
+    IFS= read -r answer < /dev/tty || answer=
+    printf '%s\n' "$answer"
+  else
+    printf '%s\n' ""
+  fi
+}
+
 SCOPE=$(prompt_scope)
-REQUESTED_MODE=$(prompt_mode)
+FAVORITES=$(prompt_favorites)
 TARGETS=$(prompt_targets)
 
 case "$REQUESTED_UPDATE" in
@@ -165,21 +159,10 @@ case "$SCOPE" in
     ;;
 esac
 
-case "$REQUESTED_MODE" in
-  strict) MODE=strict ;;
-  open|improvise) MODE=open ;;
-  *)
-    echo "Pop Culture Agent: MODE must be 'strict', 'open', or 'improvise'." >&2
-    exit 1
-    ;;
-esac
-
 if [ "$SCOPE" = repo ] &&
   [ -z "${POP_CULTURE_AGENT_ALLOW_SELF_INSTALL:-}" ] &&
   [ -f install.sh ] &&
   [ -f pop-culture-agent/AGENTS.snippet.md ] &&
-  [ -f pop-culture-agent/quotes.json ] &&
-  [ -f pop-culture-agent/config.strict.md ] &&
   [ -f pop-culture-agent/config.open.md ]; then
   echo "Pop Culture Agent: this looks like the Pop Culture Agent source repo." >&2
   echo "Run the installer from the target repo, use --global, or set POP_CULTURE_AGENT_ALLOW_SELF_INSTALL=1 to override." >&2
@@ -206,13 +189,13 @@ fi
 if [ "$SCOPE" = global ]; then
   INCLUDE_LINE="@${INSTALL_DIR}/AGENTS.md"
   SNIPPET_LINE="@${INSTALL_DIR}/AGENTS.snippet.md"
-  QUOTES_LINE="@${INSTALL_DIR}/quotes.json"
-  CONFIG_LINE="@${INSTALL_DIR}/config.${MODE}.md"
+  PREFERENCES_LINE="@${INSTALL_DIR}/preferences.md"
+  CONFIG_LINE="@${INSTALL_DIR}/config.open.md"
 else
   INCLUDE_LINE="@./${INSTALL_DIR}/AGENTS.md"
   SNIPPET_LINE="@./${INSTALL_DIR}/AGENTS.snippet.md"
-  QUOTES_LINE="@./${INSTALL_DIR}/quotes.json"
-  CONFIG_LINE="@./${INSTALL_DIR}/config.${MODE}.md"
+  PREFERENCES_LINE="@./${INSTALL_DIR}/preferences.md"
+  CONFIG_LINE="@./${INSTALL_DIR}/config.open.md"
 fi
 
 COPILOT_LINE="Refer to [Pop Culture Agent](../${INSTALL_DIR}/AGENTS.md) for agent progress-update style."
@@ -267,28 +250,53 @@ install_or_update_file() {
   fi
 }
 
-install_or_update_quotes() {
-  src=$1
-  dest=$2
-
-  if [ "$UPDATE" = 1 ] && [ -e "$dest" ]; then
-    fetch "$src" "$dest.latest"
-    echo "Pop Culture Agent: preserving existing $dest; latest quote bank saved to $dest.latest." >&2
-  elif [ "$UPDATE" = 1 ]; then
-    fetch "$src" "$dest"
-  else
-    install_file_once "$src" "$dest"
-  fi
-}
-
 write_agent_file() {
   dest=$1
 
   {
     echo "$SNIPPET_LINE"
-    echo "$QUOTES_LINE"
+    echo "$PREFERENCES_LINE"
     echo "$CONFIG_LINE"
   } > "$dest"
+}
+
+write_preferences_file() {
+  dest=$1
+  favorites=$2
+
+  {
+    printf '%s\n' "# Pop Culture Agent Preferences"
+    printf '\n'
+    printf '%s\n' "Prefer short, recognizable references from these user-favorite sources when they fit the current reasoning state:"
+    printf '\n'
+
+    count=0
+    printf '%s\n' "$favorites" | tr ',' '\n' | while IFS= read -r favorite; do
+      trimmed=$(printf '%s\n' "$favorite" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+      if [ -n "$trimmed" ] && [ "$count" -lt 3 ]; then
+        printf '%s\n' "- $trimmed"
+        count=$((count + 1))
+      fi
+    done
+
+    printf '\n'
+    printf '%s\n' "If none of these sources has a clean fit, choose another varied pop-culture reference or skip the quote."
+  } > "$dest"
+}
+
+install_or_update_preferences_file() {
+  dest=$1
+
+  if [ -e "$dest" ]; then
+    if [ "$UPDATE" = 1 ] && [ -n "$FAVORITES" ]; then
+      cp "$dest" "$dest.bak"
+      write_preferences_file "$dest" "$FAVORITES"
+    else
+      echo "Pop Culture Agent: preserving existing $dest." >&2
+    fi
+  else
+    write_preferences_file "$dest" "$FAVORITES"
+  fi
 }
 
 install_or_update_agent_file() {
@@ -307,8 +315,7 @@ install_or_update_agent_file() {
 }
 
 install_or_update_file "$REPO_RAW_URL/pop-culture-agent/AGENTS.snippet.md" "$INSTALL_DIR/AGENTS.snippet.md"
-install_or_update_quotes "$REPO_RAW_URL/pop-culture-agent/quotes.json" "$INSTALL_DIR/quotes.json"
-install_or_update_file "$REPO_RAW_URL/pop-culture-agent/config.strict.md" "$INSTALL_DIR/config.strict.md"
+install_or_update_preferences_file "$INSTALL_DIR/preferences.md"
 install_or_update_file "$REPO_RAW_URL/pop-culture-agent/config.open.md" "$INSTALL_DIR/config.open.md"
 install_or_update_agent_file "$INSTALL_DIR/AGENTS.md"
 
@@ -375,6 +382,5 @@ if has_target copilot; then
   fi
 fi
 
-echo "Pop Culture Agent installed in ${MODE} mode."
 echo "Pop Culture Agent scope: ${SCOPE}."
 echo "Pop Culture Agent targets: ${TARGETS}."

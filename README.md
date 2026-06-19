@@ -24,11 +24,11 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 When run in a terminal, the installer asks you to choose:
 
 - repo or global install scope
-- improvise or strict mode
+- up to three favorite films, games, shows, or franchises
 - which agent bridge files to create
 
-Press Enter for the recommended defaults: repo scope, improvise mode, and all
-supported repo bridge files.
+Press Enter for the recommended defaults: repo scope, no favorite-source
+preferences, and all supported repo bridge files.
 
 To make the scope explicit in a one-line install, pass installer arguments with
 `sh -s --`:
@@ -46,9 +46,8 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
 `.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
 
-In repo scope, the installer downloads `pop-culture-agent/`, writes the
-selected quote config, and adds small bridge instructions for common coding
-agents:
+In repo scope, the installer downloads `pop-culture-agent/` and adds small
+bridge instructions for common coding agents:
 
 - `AGENTS.md` for Codex-style and other `AGENTS.md` readers
 - `CLAUDE.md` for Claude Code
@@ -95,63 +94,38 @@ For a global install, include `--global`:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh -s -- --global --update
 ```
 
-Update mode replaces the stock files in `pop-culture-agent/` and writes `.bak`
-copies beside replaced files. It preserves an existing `quotes.json`; the latest
-upstream quote bank is saved beside it as `quotes.json.latest` so custom quotes
-can be merged deliberately.
+Update mode replaces the stock prompt files in `pop-culture-agent/` and writes
+`.bak` copies beside replaced files.
 
 The installer refuses to run from the Pop Culture Agent source repo by default,
 so testing the installer here does not create local bridge files by accident.
 
-## Choose A Mode
+## Reference Selection
 
-Improvise mode is the default. It prefers `quotes.json`, but lets the agent use
-a short, contextually appropriate fallback line when the bank has no fresh fit.
-
-To skip the prompt and install strict mode directly, run:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=strict sh
-```
-
-You can also pass the default mode explicitly; `open` and `improvise` are
-equivalent:
-
-```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_MODE=open sh
-```
-
-Under the hood, the generated `pop-culture-agent/AGENTS.md` includes exactly one
-config file.
-
-Improvisation mode uses:
+The generated `pop-culture-agent/AGENTS.md` includes the behavior snippet and
+one generated preferences file plus the open selection config:
 
 ```md
+@./pop-culture-agent/AGENTS.snippet.md
+@./pop-culture-agent/preferences.md
 @./pop-culture-agent/config.open.md
 ```
 
-This is the recommended default because it keeps the agent from going quiet
-when the quote bank has no exact fit.
+The agent chooses short, recognizable references from the model's own
+pop-culture knowledge. There is no strict bank mode and no bundled quote list.
+If no familiar reference cleanly matches the reasoning state, the agent should
+skip the quote instead of forcing a generic one.
 
-Strict mode uses:
+To set favorite sources non-interactively, use `POP_CULTURE_AGENT_FAVORITES`
+with up to three comma-separated values:
 
-```md
-@./pop-culture-agent/config.strict.md
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_FAVORITES="Scream, Metal Gear Solid, Alien" sh
 ```
 
-Strict mode uses only `quotes.json` and skips quotes when no bank quote fits.
-
-To switch to strict mode later, edit `pop-culture-agent/AGENTS.md` and replace:
-
-```md
-@./pop-culture-agent/config.open.md
-```
-
-with:
-
-```md
-@./pop-culture-agent/config.strict.md
-```
+Existing `preferences.md` files are preserved on rerun. In update mode, passing
+`POP_CULTURE_AGENT_FAVORITES` refreshes `preferences.md` and writes a `.bak`
+copy first.
 
 ## Choose Agent Targets
 
@@ -165,7 +139,13 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 For CI or other non-interactive installs, set the values explicitly:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=repo POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=repo POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot sh
+```
+
+You can include favorites in the same command:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=repo POP_CULTURE_AGENT_FAVORITES="Scream, Metal Gear Solid, Alien" POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot sh
 ```
 
 To update non-interactively, set `POP_CULTURE_AGENT_UPDATE=1`:
@@ -177,7 +157,7 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 To run a non-interactive global install:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_MODE=strict POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh
+curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh
 ```
 
 ## Example Outputs
@@ -185,7 +165,7 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 Discovery:
 
 ```md
-**The truth is out there.**
+**Enhance.**
 
 The issue is in `AuthReducer`: logout clears the token but leaves the refresh
 task running.
@@ -194,7 +174,7 @@ task running.
 Root cause found:
 
 ```md
-**The culprit wore a nametag.**
+**It was Agatha all along.**
 
 `MenuImporter` is parsing the cached fixture instead of the downloaded response.
 ```
@@ -202,7 +182,7 @@ Root cause found:
 Hidden complexity:
 
 ```md
-**New layer, new rules.**
+**That's no moon.**
 
 The CLI flag is wired correctly, but the installer path is rebuilt later from
 `POP_CULTURE_AGENT_DIR`.
@@ -211,7 +191,7 @@ The CLI flag is wired correctly, but the installer path is rebuilt later from
 Risky action:
 
 ```md
-**Save before the boss.**
+**Never tell me the odds.**
 
 I am about to rewrite the bridge-file update logic and keep the existing user
 instructions intact.
@@ -220,7 +200,7 @@ instructions intact.
 Build/test failure:
 
 ```md
-**Red screen encounter.**
+**Houston, we have a problem.**
 
 `tests/install.sh` now reaches update mode, but the backup assertion is checking
 the old config line.
@@ -229,27 +209,27 @@ the old config line.
 Completion:
 
 ```md
-**Quest log clear.**
+**See you, space cowboy.**
 
-The quote bank is valid JSON, the installer test passes, and the branch is
-ready to push.
+The installer test passes, and the branch is ready to push.
 ```
 
 ## Customize
 
-Edit `pop-culture-agent/quotes.json` to add or remove quotes. Edit
-`pop-culture-agent/AGENTS.snippet.md` to change frequency, formatting, tone
-modes, or selection rules. The installer preserves these files when rerun.
+Edit `pop-culture-agent/AGENTS.snippet.md` to change frequency, formatting, tone
+modes, or selection rules.
 
-You can also ask your coding agent to expand the bank naturally:
+You can steer the agent later by editing `pop-culture-agent/preferences.md`:
 
 ```md
-Add short quotes from Metal Gear Solid to Pop Culture Agent.
+- Scream
+- Metal Gear Solid
+- Alien
 ```
 
-The installed instructions tell the agent to choose short, standalone lines,
-categorize them by reasoning state, assign matching tones, and validate
-`quotes.json`. Providing a few favorite exact lines works best.
+The installed instructions tell the agent to prioritize semantic fit, keep
+references short, avoid long copyrighted passages, and skip the quote when no
+recognizable line fits.
 
 ## Uninstall
 
