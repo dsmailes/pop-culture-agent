@@ -1,3 +1,5 @@
-@./pop-culture-agent/AGENTS.snippet.md
-@./pop-culture-agent/preferences.md
-@./pop-culture-agent/config.open.md
+Read and follow these instruction files. Paths are relative to this file.
+
+@./AGENTS.snippet.md
+@./preferences.md
+@./config.open.md

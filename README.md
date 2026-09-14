@@ -133,7 +133,9 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 ```
 
 Update mode replaces the stock prompt files in `pop-culture-agent/` and writes
-`.bak` copies beside replaced files.
+`.bak` copies beside replaced files. Each backup contains the version from the
+most recent update. Failed downloads never replace a stock file or leave partial
+content at its destination; rerun the command to finish an interrupted update.
 
 The installer refuses to run from the Pop Culture Agent source repo by default,
 so testing the installer here does not create local bridge files by accident.
@@ -144,10 +146,17 @@ The generated `pop-culture-agent/AGENTS.md` includes the behavior snippet and
 one generated preferences file plus the open selection config:
 
 ```md
-@./pop-culture-agent/AGENTS.snippet.md
-@./pop-culture-agent/preferences.md
-@./pop-culture-agent/config.open.md
+Read and follow these instruction files. Paths are relative to this file.
+
+@./AGENTS.snippet.md
+@./preferences.md
+@./config.open.md
 ```
+
+Paths inside the installed `AGENTS.md` resolve relative to that file, so the
+bundle stays portable when a repository moves. This follows the import behavior
+of [Claude Code](https://code.claude.com/docs/en/memory#import-additional-files)
+and [Gemini CLI](https://geminicli.com/docs/reference/memport/).
 
 The agent chooses short, recognizable references from the model's own
 pop-culture knowledge. There is no strict bank mode and no bundled quote list.
@@ -163,7 +172,9 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 
 Existing `preferences.md` files are preserved on rerun. In update mode, passing
 `POP_CULTURE_AGENT_FAVORITES` refreshes `preferences.md` and writes a `.bak`
-copy first.
+copy first. Set `POP_CULTURE_AGENT_FAVORITES=""` explicitly with `--update` to
+clear favorites. Omitting the variable preserves existing preferences; pressing
+Enter at the favorites prompt during an update also preserves them.
 
 Example generated preferences:
 
@@ -211,6 +222,36 @@ To run a non-interactive global install:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | POP_CULTURE_AGENT_NONINTERACTIVE=1 POP_CULTURE_AGENT_SCOPE=global POP_CULTURE_AGENT_TARGETS=agents,claude,gemini sh
 ```
+
+## Custom Install Directory
+
+Set `POP_CULTURE_AGENT_DIR` to override the bundle location. Relative paths are
+resolved from the target repository for repo scope and from your home directory
+for global scope. Absolute paths are supported in both scopes. An empty path is
+rejected.
+
+```sh
+POP_CULTURE_AGENT_DIR=prompts/pop-culture sh install.sh --repo
+```
+
+Run this with a local copy of the installer in the target repository, or pass the
+same environment variable to `sh` in the curl examples above.
+
+## Development
+
+Run the installer checks from this source repository:
+
+```sh
+sh -n install.sh
+sh -n tests/install.sh
+sh tests/install.sh
+```
+
+Tests use temporary directories and local fixtures, disable interactive prompts,
+and isolate installer settings from your environment. They cover repeat installs,
+updates and backups, favorites, global targets, custom paths, nested imports,
+failed downloads, and the source-repository guard. GitHub Actions runs the same
+checks on Linux and macOS.
 
 ## Example Outputs
 

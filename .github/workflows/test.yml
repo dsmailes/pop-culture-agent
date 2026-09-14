@@ -1,0 +1,23 @@
+name: Installer tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check shell syntax
+        run: sh -n install.sh && sh -n tests/install.sh
+      - name: Test installer
+        run: sh tests/install.sh

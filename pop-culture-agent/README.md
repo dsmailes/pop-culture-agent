@@ -48,9 +48,14 @@ Run this from the target repo:
 curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/install.sh | sh
 ```
 
-When run in a terminal, the installer asks for up to three favorite films,
-games, shows, or franchises, then asks which agent bridge files to create. Press
-Enter for the recommended defaults, including no favorite-source preferences.
+When run in a terminal, the installer asks for repo or global scope, up to three
+favorite films, games, shows, or franchises, and which agent bridge files to
+create. Press Enter for repo scope, no favorite-source preferences, and all
+supported bridges.
+
+Use `--global` to install the shared bundle in `~/.pop-culture-agent` and add
+bridges to `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md`.
+Global scope skips Copilot, whose instructions are repository-level.
 
 If you do not want extra bridge files such as `CLAUDE.md`, `GEMINI.md`, or
 `.github/copilot-instructions.md`, choose `AGENTS.md only` at the prompt.
@@ -98,9 +103,11 @@ For non-interactive updates, set `POP_CULTURE_AGENT_UPDATE=1`.
 The installed agent uses open reference selection:
 
 ```md
-@./pop-culture-agent/AGENTS.snippet.md
-@./pop-culture-agent/preferences.md
-@./pop-culture-agent/config.open.md
+Read and follow these instruction files. Paths are relative to this file.
+
+@./AGENTS.snippet.md
+@./preferences.md
+@./config.open.md
 ```
 
 The agent chooses short, recognizable references from the model's own
@@ -117,7 +124,9 @@ curl -fsSL https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main/ins
 
 Existing `preferences.md` files are preserved on rerun. In update mode, passing
 `POP_CULTURE_AGENT_FAVORITES` refreshes `preferences.md` and writes a `.bak`
-copy first.
+copy first. Set `POP_CULTURE_AGENT_FAVORITES=""` explicitly with `--update` to
+clear favorites. Omitting the variable preserves existing preferences; pressing
+Enter at the favorites prompt during an update also preserves them.
 
 ## Install-Time Agent Targets
 

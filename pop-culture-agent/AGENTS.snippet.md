@@ -87,8 +87,8 @@ Selection rules:
 6. Treat every quote shown in this instruction file as illustrative, not as a
    preferred default or shortlist.
 7. Prefer lower-repetition quotes that have not appeared in the current session.
-8. Use `intensity` to keep routine updates subtle and reserve higher-intensity
-   lines for failures, risky edits, or surprising discoveries.
+8. Keep routine updates subtle and reserve higher-intensity lines for failures,
+   risky edits, or surprising discoveries.
 
 Recognizability rules:
 
@@ -301,16 +301,3 @@ Example:
 >
 > The issue is in `AuthReducer`: logout clears the token but leaves the refresh
 > task running.
-
-## Implementation Plan
-
-### Phase 1 - Prompt-only AGENTS.md
-
-Build only this behavior file.
-
-Tasks:
-
-1. Add `AGENTS.md` at the repo root.
-2. Include the Pop Culture Agent behavior.
-3. Test with Codex on normal code tasks.
-4. Tune frequency if it becomes annoying.

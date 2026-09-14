@@ -4,6 +4,7 @@ set -eu
 REPO_RAW_URL="${POP_CULTURE_AGENT_RAW_URL:-https://raw.githubusercontent.com/dsmailes/pop-culture-agent/main}"
 REQUESTED_SCOPE="${POP_CULTURE_AGENT_SCOPE:-}"
 REQUESTED_UPDATE="${POP_CULTURE_AGENT_UPDATE:-}"
+FAVORITES_PROVIDED=${POP_CULTURE_AGENT_FAVORITES+x}
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -26,6 +27,8 @@ Environment:
   POP_CULTURE_AGENT_FAVORITES="Scream, Metal Gear Solid, Alien"
   POP_CULTURE_AGENT_TARGETS=agents,claude,gemini,copilot
   POP_CULTURE_AGENT_UPDATE=1
+  POP_CULTURE_AGENT_NONINTERACTIVE=1
+  POP_CULTURE_AGENT_DIR=path/to/install
 EOF
       exit 0
       ;;
@@ -38,7 +41,8 @@ EOF
 done
 
 can_prompt() {
-  [ -z "${POP_CULTURE_AGENT_NONINTERACTIVE:-}" ] && [ -r /dev/tty ] && [ -w /dev/tty ]
+  [ -z "${POP_CULTURE_AGENT_NONINTERACTIVE:-}" ] &&
+    ( : < /dev/tty > /dev/tty ) 2>/dev/null
 }
 
 prompt_scope() {
@@ -171,6 +175,10 @@ fi
 
 if [ "${POP_CULTURE_AGENT_DIR+x}" = x ]; then
   case "$POP_CULTURE_AGENT_DIR" in
+    "")
+      echo "Pop Culture Agent: POP_CULTURE_AGENT_DIR must not be empty." >&2
+      exit 1
+      ;;
     /*) INSTALL_DIR=$POP_CULTURE_AGENT_DIR ;;
     *)
       if [ "$SCOPE" = global ]; then
@@ -186,19 +194,22 @@ else
   INSTALL_DIR="pop-culture-agent"
 fi
 
-if [ "$SCOPE" = global ]; then
-  INCLUDE_LINE="@${INSTALL_DIR}/AGENTS.md"
-  SNIPPET_LINE="@${INSTALL_DIR}/AGENTS.snippet.md"
-  PREFERENCES_LINE="@${INSTALL_DIR}/preferences.md"
-  CONFIG_LINE="@${INSTALL_DIR}/config.open.md"
-else
-  INCLUDE_LINE="@./${INSTALL_DIR}/AGENTS.md"
-  SNIPPET_LINE="@./${INSTALL_DIR}/AGENTS.snippet.md"
-  PREFERENCES_LINE="@./${INSTALL_DIR}/preferences.md"
-  CONFIG_LINE="@./${INSTALL_DIR}/config.open.md"
-fi
+case "$INSTALL_DIR" in
+  /*)
+    INCLUDE_LINE="@${INSTALL_DIR}/AGENTS.md"
+    COPILOT_PATH="${INSTALL_DIR}/AGENTS.md"
+    ;;
+  *)
+    INCLUDE_LINE="@./${INSTALL_DIR}/AGENTS.md"
+    COPILOT_PATH="../${INSTALL_DIR}/AGENTS.md"
+    ;;
+esac
 
-COPILOT_LINE="Refer to [Pop Culture Agent](../${INSTALL_DIR}/AGENTS.md) for agent progress-update style."
+# Nested imports resolve relative to the installed AGENTS.md itself.
+SNIPPET_LINE="@./AGENTS.snippet.md"
+PREFERENCES_LINE="@./preferences.md"
+CONFIG_LINE="@./config.open.md"
+COPILOT_LINE="Refer to [Pop Culture Agent](${COPILOT_PATH}) for agent progress-update style."
 
 if command -v curl >/dev/null 2>&1; then
   fetch() {
@@ -214,6 +225,14 @@ else
 fi
 
 mkdir -p "$INSTALL_DIR"
+download_tmp=
+trap '[ -z "$download_tmp" ] || rm -f "$download_tmp"' 0
+trap 'exit 1' HUP INT TERM
+
+fetch_file() {
+  download_tmp=$(mktemp "$INSTALL_DIR/.download.XXXXXX")
+  fetch "$1" "$download_tmp"
+}
 
 install_file_once() {
   src=$1
@@ -224,19 +243,20 @@ install_file_once() {
     return
   fi
 
-  fetch "$src" "$dest"
+  fetch_file "$src"
+  mv "$download_tmp" "$dest"
+  download_tmp=
 }
 
 update_file_with_backup() {
   src=$1
   dest=$2
-  tmp="${dest}.tmp.$$"
-
-  fetch "$src" "$tmp"
+  fetch_file "$src"
   if [ -e "$dest" ]; then
     cp "$dest" "$dest.bak"
   fi
-  mv "$tmp" "$dest"
+  mv "$download_tmp" "$dest"
+  download_tmp=
 }
 
 install_or_update_file() {
@@ -254,15 +274,31 @@ write_agent_file() {
   dest=$1
 
   {
-    echo "$SNIPPET_LINE"
-    echo "$PREFERENCES_LINE"
-    echo "$CONFIG_LINE"
+    printf '%s\n' 'Read and follow these instruction files. Paths are relative to this file.' ''
+    printf '%s\n' "$SNIPPET_LINE" "$PREFERENCES_LINE" "$CONFIG_LINE"
   } > "$dest"
 }
 
 write_preferences_file() {
   dest=$1
   favorites=$2
+  favorite_lines=$(printf '%s\n' "$favorites" | tr ',' '\n' | awk '
+    { sub(/^[[:space:]]+/, ""); sub(/[[:space:]]+$/, "") }
+    NF && count < 3 { print "- " $0; count++ }
+  ')
+
+  if [ -z "$favorite_lines" ]; then
+    cat > "$dest" <<'EOF'
+# Pop Culture Agent Preferences
+
+No user-favorite sources are configured yet.
+
+When favorites are configured during install, prefer short, recognizable
+references from those sources when they fit the current reasoning state. If none
+has a clean fit, choose another varied pop-culture reference or skip the quote.
+EOF
+    return
+  fi
 
   {
     printf '%s\n' "# Pop Culture Agent Preferences"
@@ -270,14 +306,7 @@ write_preferences_file() {
     printf '%s\n' "Prefer short, recognizable references from these user-favorite sources when they fit the current reasoning state:"
     printf '\n'
 
-    count=0
-    printf '%s\n' "$favorites" | tr ',' '\n' | while IFS= read -r favorite; do
-      trimmed=$(printf '%s\n' "$favorite" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
-      if [ -n "$trimmed" ] && [ "$count" -lt 3 ]; then
-        printf '%s\n' "- $trimmed"
-        count=$((count + 1))
-      fi
-    done
+    printf '%s\n' "$favorite_lines"
 
     printf '\n'
     printf '%s\n' "If none of these sources has a clean fit, choose another varied pop-culture reference or skip the quote."
@@ -288,7 +317,7 @@ install_or_update_preferences_file() {
   dest=$1
 
   if [ -e "$dest" ]; then
-    if [ "$UPDATE" = 1 ] && [ -n "$FAVORITES" ]; then
+    if [ "$UPDATE" = 1 ] && { [ "$FAVORITES_PROVIDED" = x ] || [ -n "$FAVORITES" ]; }; then
       cp "$dest" "$dest.bak"
       write_preferences_file "$dest" "$FAVORITES"
     else
